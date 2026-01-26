@@ -13,7 +13,7 @@ const Player = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  
+
   const itemId = Number(id);
   const season = Number(searchParams.get('s')) || 1;
   const episode = Number(searchParams.get('e')) || 1;
@@ -85,9 +85,9 @@ const Player = () => {
       {/* Navigation Header */}
       <div className="p-4 md:px-8 flex items-center justify-between bg-gradient-to-b from-background to-transparent border-b border-white/5">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => navigate(-1)}
             className="rounded-full hover:bg-secondary focus:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
           >
@@ -125,8 +125,8 @@ const Player = () => {
                   <SelectValue placeholder="Episode" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({ 
-                    length: tvItem.seasons?.find(s => s.season_number === season)?.episode_count || 0 
+                  {Array.from({
+                    length: tvItem.seasons?.find(s => s.season_number === season)?.episode_count || 0
                   }).map((_, i) => (
                     <SelectItem key={i + 1} value={String(i + 1)}>
                       Episode {i + 1}
@@ -148,15 +148,16 @@ const Player = () => {
       <main className="px-4 md:px-12 py-6">
         <div className="max-w-6xl mx-auto">
           <div className="relative group">
-            <StreamPlayer 
-              id={itemId} 
-              type={type as 'movie' | 'tv' | 'anime'} 
-              season={season} 
-              episode={episode} 
-              title={title} 
+            <StreamPlayer
+              id={itemId}
+              imdbId={movieItem ? movieItem.imdb_id : tvItem?.external_ids?.imdb_id}
+              type={type as 'movie' | 'tv' | 'anime'}
+              season={season}
+              episode={episode}
+              title={title}
             />
           </div>
-          
+
           {/* Mobile Selectors */}
           {!isMovie && tvItem && (
             <div className="flex md:hidden items-center gap-2 mt-4">
@@ -178,8 +179,8 @@ const Player = () => {
                   <SelectValue placeholder="Episode" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Array.from({ 
-                    length: tvItem.seasons?.find(s => s.season_number === season)?.episode_count || 0 
+                  {Array.from({
+                    length: tvItem.seasons?.find(s => s.season_number === season)?.episode_count || 0
                   }).map((_, i) => (
                     <SelectItem key={i + 1} value={String(i + 1)}>
                       E{i + 1}
@@ -207,9 +208,9 @@ const Player = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="h-px bg-white/5 w-full" />
-            
+
             <p className="text-foreground/80 leading-relaxed max-w-4xl text-lg">
               {item.overview}
             </p>

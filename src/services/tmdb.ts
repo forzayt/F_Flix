@@ -53,6 +53,7 @@ export interface MovieDetails extends Movie {
   status: string;
   budget: number;
   revenue: number;
+  imdb_id: string | null;
   production_companies: { id: number; name: string; logo_path: string | null }[];
 }
 
@@ -63,6 +64,17 @@ export interface TVShowDetails extends TVShow {
   status: string;
   number_of_seasons: number;
   number_of_episodes: number;
+  external_ids?: {
+    imdb_id: string | null;
+    freebase_mid: string | null;
+    freebase_id: string | null;
+    tvdb_id: number | null;
+    tvrage_id: number | null;
+    wikidata_id: string | null;
+    facebook_id: string | null;
+    instagram_id: string | null;
+    twitter_id: string | null;
+  };
   seasons: {
     id: number;
     name: string;
@@ -118,7 +130,7 @@ export const getUpcomingMovies = (page = 1) =>
   fetchTMDB<PaginatedResponse<Movie>>('/movie/upcoming', { page: String(page) });
 
 export const getMovieDetails = (id: number) =>
-  fetchTMDB<MovieDetails>(`/movie/${id}`);
+  fetchTMDB<MovieDetails>(`/movie/${id}`, { append_to_response: 'external_ids' });
 
 export const getMovieVideos = (id: number) =>
   fetchTMDB<{ results: Video[] }>(`/movie/${id}/videos`);
@@ -148,7 +160,7 @@ export const getOnTheAirTVShows = (page = 1) =>
   fetchTMDB<PaginatedResponse<TVShow>>('/tv/on_the_air', { page: String(page) });
 
 export const getTVShowDetails = (id: number) =>
-  fetchTMDB<TVShowDetails>(`/tv/${id}`);
+  fetchTMDB<TVShowDetails>(`/tv/${id}`, { append_to_response: 'external_ids' });
 
 export const getTVShowVideos = (id: number) =>
   fetchTMDB<{ results: Video[] }>(`/tv/${id}/videos`);
