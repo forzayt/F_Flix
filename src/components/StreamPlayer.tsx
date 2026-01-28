@@ -108,7 +108,7 @@ const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: Stre
             </div>
           )}
 
-          <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+          <div className="absolute top-4 left-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
             <Button
               variant="secondary"
               size="sm"
