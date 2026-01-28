@@ -43,6 +43,7 @@ export interface TVShow {
   first_air_date: string;
   vote_average: number;
   vote_count: number;
+  popularity: number;
   genre_ids: number[];
   media_type?: string;
 }
@@ -66,6 +67,7 @@ export interface TVShowDetails extends TVShow {
   status: string;
   number_of_seasons: number;
   number_of_episodes: number;
+  spoken_languages: { iso_639_1: string; name: string; english_name: string }[];
   external_ids?: {
     imdb_id: string | null;
     freebase_mid: string | null;

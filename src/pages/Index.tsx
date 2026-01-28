@@ -73,7 +73,7 @@ const Index = () => {
               {continueWatching.map((item) => (
                 <div key={`${item.type}-${item.id}`} className="group relative flex-shrink-0">
                   <Link
-                    to={`/watch/${item.type}/${item.id}${item.type !== 'movie' ? `?s=${item.season}&e=${item.episode}` : ''}`}
+                    to={`/${item.type === 'movie' ? 'movie' : 'tv'}/${item.id}${item.type !== 'movie' ? `?s=${item.season}&e=${item.episode}` : ''}`}
                     className="block w-[280px] md:w-[350px] aspect-video rounded-xl overflow-hidden bg-secondary transition-all hover:scale-105 hover:z-10 focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <img
@@ -82,7 +82,7 @@ const Index = () => {
                       className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                    
+
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <h3 className="text-sm md:text-base font-bold line-clamp-1 group-hover:text-primary transition-colors">
                         {item.title}
