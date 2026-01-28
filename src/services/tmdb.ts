@@ -29,6 +29,7 @@ export interface Movie {
   release_date: string;
   vote_average: number;
   vote_count: number;
+  popularity: number;
   genre_ids: number[];
   media_type?: string;
 }
@@ -54,6 +55,7 @@ export interface MovieDetails extends Movie {
   budget: number;
   revenue: number;
   imdb_id: string | null;
+  spoken_languages: { iso_639_1: string; name: string; english_name: string }[];
   production_companies: { id: number; name: string; logo_path: string | null }[];
 }
 

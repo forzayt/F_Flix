@@ -11,10 +11,11 @@ interface StreamPlayerProps {
   season?: number;
   episode?: number;
   title: string;
+  autoPlay?: boolean;
 }
 
-const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: StreamPlayerProps) => {
-  const [selectedSource, setSelectedSource] = useState<string | null>(null);
+const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title, autoPlay = false }: StreamPlayerProps) => {
+  const [selectedSource, setSelectedSource] = useState<string | null>(autoPlay && STREAM_SOURCES.length > 0 ? STREAM_SOURCES[0].id : null);
   const [isLoading, setIsLoading] = useState(true);
 
   const getStreamUrl = (sourceUrl: string, sourceId: string) => {

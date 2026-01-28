@@ -155,6 +155,7 @@ const Player = () => {
               season={season}
               episode={episode}
               title={title}
+              autoPlay={searchParams.get('autoplay') === 'true'}
             />
           </div>
 
