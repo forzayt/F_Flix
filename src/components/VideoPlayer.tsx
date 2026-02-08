@@ -17,7 +17,7 @@ const VideoPlayer = ({ video, title }: VideoPlayerProps) => {
   return (
     <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
       <iframe
-        src={`https://www.youtube.com/embed/${video.key}?autoplay=0&rel=0`}
+        src={`https://www.youtube.com/embed/${video.key}?autoplay=0&rel=0&vq=hd1080`}
         title={title}
         className="w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
