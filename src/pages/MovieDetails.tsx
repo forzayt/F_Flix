@@ -107,11 +107,11 @@ const MovieDetails = () => {
           />
         ) : null}
 
-        {/* Cinematic Overlays */}
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent" />
+        {/* Cinematic Overlays - darker overlay so trailer appears darker */}
+        <div className="absolute inset-0 bg-black/2" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent" />
 
         {/* Main Content Overlay */}
         <div className="absolute inset-0 flex flex-col justify-center px-4 md:px-12 pt-20">
