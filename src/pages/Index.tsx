@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import MovieRow from '@/components/MovieRow';
+import DraggableCarousel from '@/components/DraggableCarousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getContinueWatching, removeFromContinueWatching, ContinueWatchingItem } from '@/lib/continueWatching';
 
@@ -69,12 +70,12 @@ const Index = () => {
               <Clock size={24} className="text-primary" />
               Continue Watching
             </h2>
-            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar scroll-smooth">
+            <DraggableCarousel className="pb-4" contentClassName="gap-4">
               {continueWatching.map((item) => (
-                <div key={`${item.type}-${item.id}`} className="group relative flex-shrink-0">
+                <div key={`${item.type}-${item.id}`} className="group relative w-[280px] md:w-[350px]">
                   <Link
                     to={`/${item.type === 'movie' ? 'movie' : 'tv'}/${item.id}${item.type !== 'movie' ? `?s=${item.season}&e=${item.episode}` : ''}`}
-                    className="block w-[280px] md:w-[350px] aspect-video rounded-xl overflow-hidden bg-secondary transition-all hover:scale-105 hover:z-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="block w-full aspect-video rounded-xl overflow-hidden bg-secondary transition-all hover:scale-105 hover:z-10 focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <img
                       src={getImageUrl(item.backdrop_path || item.poster_path, 'w500')}
@@ -110,7 +111,7 @@ const Index = () => {
                   </button>
                 </div>
               ))}
-            </div>
+            </DraggableCarousel>
           </div>
         )}
 

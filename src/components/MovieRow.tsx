@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Movie, TVShow } from '@/services/tmdb';
 import MovieCard from './MovieCard';
+import DraggableCarousel, { type CarouselApi } from './DraggableCarousel';
 import { cn } from '@/lib/utils';
 
 interface MovieRowProps {
@@ -12,17 +13,7 @@ interface MovieRowProps {
 }
 
 const MovieRow = ({ title, items, type, className }: MovieRowProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.clientWidth * 0.8;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth',
-      });
-    }
-  };
+  const [api, setApi] = useState<CarouselApi | undefined>(undefined);
 
   if (!items.length) return null;
 
@@ -33,31 +24,33 @@ const MovieRow = ({ title, items, type, className }: MovieRowProps) => {
       <div className="group/row relative">
         {/* Left Arrow */}
         <button
-          onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity hover:bg-background focus:bg-background ml-2 outline-none focus:ring-2 focus:ring-primary"
+          onClick={() => api?.scrollPrev()}
+          disabled={!api?.canScrollPrev()}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity hover:bg-background focus:bg-background ml-2 outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
         >
           <ChevronLeft size={24} />
         </button>
 
-        {/* Scrollable Container */}
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide px-4 md:px-12 py-4 -my-4 focus:outline-none"
+        <DraggableCarousel
+          setApi={setApi}
+          className="px-4 md:px-12 py-4 -my-4"
+          slideClassName="max-w-[130px] md:max-w-[210px]"
         >
           {items.map((item) => (
-            <MovieCard 
-              key={item.id} 
-              item={item} 
-              type={type} 
-              className="group-hover/row:opacity-50 hover:!opacity-100 focus:!opacity-100 transition-opacity duration-300"
+            <MovieCard
+              key={item.id}
+              item={item}
+              type={type}
+              className="w-[120px] md:w-[160px] group-hover/row:opacity-50 hover:!opacity-100 focus:!opacity-100 transition-opacity duration-300"
             />
           ))}
-        </div>
+        </DraggableCarousel>
 
         {/* Right Arrow */}
         <button
-          onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity hover:bg-background focus:bg-background mr-2 outline-none focus:ring-2 focus:ring-primary"
+          onClick={() => api?.scrollNext()}
+          disabled={!api?.canScrollNext()}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity hover:bg-background focus:bg-background mr-2 outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
         >
           <ChevronRight size={24} />
         </button>
