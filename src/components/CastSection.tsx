@@ -12,12 +12,12 @@ const CastSection = ({ cast }: CastSectionProps) => {
       <h2 className="text-xl font-bold mb-4">Cast</h2>
       <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
         {cast.slice(0, 10).map((person) => (
-          <div key={person.id} className="flex-shrink-0 w-[120px] text-center">
-            <div className="w-[120px] h-[120px] rounded-full overflow-hidden bg-secondary mx-auto">
+          <div key={person.id} className="flex-shrink-0 w-[240px] text-center">
+            <div className="w-[240px] overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10 bg-secondary">
               <img
-                src={getImageUrl(person.profile_path, 'w200')}
+                src={getImageUrl(person.profile_path, 'w500')}
                 alt={person.name}
-                className="w-full h-full object-cover"
+                className="w-full aspect-[2/3] object-cover"
                 loading="lazy"
               />
             </div>

@@ -195,13 +195,13 @@ const MovieDetails = () => {
       <div className="px-4 md:px-12 py-12 bg-black">
         {/* Poster and Secondary Info (Optional) */}
         <div className="hidden lg:flex gap-12 mb-16 border-t border-white/5 pt-12">
-          <div className="flex-shrink-0 w-[240px]">
+          {/* <div className="flex-shrink-0 w-[240px]">
             <img
               src={getImageUrl(movie.poster_path, 'w500')}
               alt={movie.title}
               className="w-full rounded-xl shadow-2xl ring-1 ring-white/10"
             />
-          </div>
+          </div> */}
           <div className="flex-1 space-y-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div>
