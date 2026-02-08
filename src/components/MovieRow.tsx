@@ -41,7 +41,7 @@ const MovieRow = ({ title, items, type, className }: MovieRowProps) => {
               key={item.id}
               item={item}
               type={type}
-              className="w-[120px] md:w-[160px] group-hover/row:opacity-50 hover:!opacity-100 focus:!opacity-100 transition-opacity duration-300"
+              className="w-[120px] md:w-[160px] focus:outline-none focus:ring-2 focus:ring-primary"
             />
           ))}
         </DraggableCarousel>
