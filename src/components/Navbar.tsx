@@ -19,6 +19,7 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/movies', label: 'Movies' },
+    { to: '/Live', label: 'Live' },
     { to: '/tv-series', label: 'TV Series' },
     { to: '/anime', label: 'Anime' },
   ];

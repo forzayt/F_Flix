@@ -11,6 +11,7 @@ import Search from "./pages/Search";
 import MovieDetails from "./pages/MovieDetails";
 import TVDetails from "./pages/TVDetails";
 import Player from "./pages/Player";
+import Live from "./pages/Live";
 import NotFound from "./pages/NotFound";
 import TVNavigationHandler from "./components/TVNavigationHandler";
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/movie/:id" element={<MovieDetails />} />
           <Route path="/tv/:id" element={<TVDetails />} />
           <Route path="/watch/:type/:id" element={<Player />} />
+          <Route path="/Live" element={<Live />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
