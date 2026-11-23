@@ -1,9 +1,8 @@
-import { Star, Clock, Calendar, Play, Plus, Heart, Share2, List, Download, Eye, Globe, Volume2, VolumeX } from 'lucide-react';
+import { Star, Clock, Calendar, Play, Plus, Heart, Share2, List, Download, Eye, Globe, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMovieDetails, getMovieVideos, getMovieCredits, getSimilarMovies, getBackdropUrl, getImageUrl } from '@/services/tmdb';
-import Navbar from '@/components/Navbar';
 import VideoPlayer from '@/components/VideoPlayer';
 import CastSection from '@/components/CastSection';
 import MovieRow from '@/components/MovieRow';
@@ -48,7 +47,6 @@ const MovieDetails = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="pt-20">
           <Skeleton className="h-[60vh] w-full" />
           <div className="px-4 md:px-12 py-8 space-y-4">
@@ -63,8 +61,14 @@ const MovieDetails = () => {
 
   if (!movie) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <div className="min-h-screen bg-background relative">
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="absolute top-4 left-4 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-black/50 hover:bg-black/70 border border-white/15 backdrop-blur-md text-white transition-all"
+        >
+          <ArrowLeft size={22} />
+        </button>
         <div className="pt-20 flex items-center justify-center h-[50vh]">
           <p className="text-muted-foreground text-xl">Movie not found</p>
         </div>
@@ -81,10 +85,17 @@ const MovieDetails = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Navbar />
-
       {/* Hero Banner with Auto-playing Trailer */}
       <div className="relative h-[85vh] w-full overflow-hidden">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="absolute top-4 left-4 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-black/50 hover:bg-black/70 border border-white/15 backdrop-blur-md text-white transition-all"
+        >
+          <ArrowLeft size={22} />
+        </button>
+
         {trailer ? (
           <div className="absolute inset-0 pointer-events-none scale-150">
             <iframe
