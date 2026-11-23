@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { DEFAULT_STREAM_SOURCE } from '@/constants/sources';
+import { resolveStreamSource, StreamSourceOptions } from '@/constants/sources';
 
 interface StreamPlayerProps {
   id: number;
@@ -12,14 +12,30 @@ interface StreamPlayerProps {
 }
 
 const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: StreamPlayerProps) => {
+  const [streamUrl, setStreamUrl] = useState<string | null>(null);
+  const [sourceName, setSourceName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const streamUrl = DEFAULT_STREAM_SOURCE.buildUrl({ id, imdbId, type, season, episode });
-
-  // Show the loader again whenever the stream changes (e.g. switching episodes).
   useEffect(() => {
+    const controller = new AbortController();
+    let cancelled = false;
+    const options: StreamSourceOptions = { id, imdbId, type, season, episode };
+
     setIsLoading(true);
-  }, [streamUrl]);
+    setStreamUrl(null);
+    setSourceName(null);
+
+    resolveStreamSource(options, controller.signal).then((source) => {
+      if (cancelled || controller.signal.aborted) return;
+      setSourceName(source.name);
+      setStreamUrl(source.buildUrl(options));
+    });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [id, imdbId, type, season, episode]);
 
   return (
     <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-2xl ring-1 ring-white/10">
@@ -31,25 +47,29 @@ const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: Stre
               <div className="absolute top-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
             <div className="flex flex-col items-center gap-1">
-              <p className="text-white font-semibold tracking-wide">Connecting to {DEFAULT_STREAM_SOURCE.name}...</p>
+              <p className="text-white font-semibold tracking-wide">
+                {sourceName ? `Connecting to ${sourceName}...` : 'Finding a working server...'}
+              </p>
               <p className="text-xs text-muted-foreground">Preparing your high quality stream</p>
             </div>
           </div>
         </div>
       )}
 
-      <iframe
-        key={streamUrl}
-        src={streamUrl}
-        title={title}
-        className={cn(
-          "w-full h-full border-0 transition-opacity duration-700 delay-300",
-          isLoading ? "opacity-0" : "opacity-100"
-        )}
-        allowFullScreen
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        onLoad={() => setIsLoading(false)}
-      />
+      {streamUrl && (
+        <iframe
+          key={streamUrl}
+          src={streamUrl}
+          title={title}
+          className={cn(
+            "w-full h-full border-0 transition-opacity duration-700 delay-300",
+            isLoading ? "opacity-0" : "opacity-100"
+          )}
+          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          onLoad={() => setIsLoading(false)}
+        />
+      )}
     </div>
   );
 };
