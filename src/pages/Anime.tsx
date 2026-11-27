@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getAnimeMovies, getAnimeTVShows, Movie, TVShow } from '@/services/tmdb';
-import Navbar from '@/components/Navbar';
+import { motion } from 'framer-motion';
+import { Clapperboard, Tv } from 'lucide-react';
+import { getAnimeMovies, getAnimeTVShows } from '@/services/tmdb';
 import ContentGrid from '@/components/ContentGrid';
-import { Button } from '@/components/ui/button';
+import Pagination from '@/components/Pagination';
+import PageHeader from '@/components/layout/PageHeader';
 import { cn } from '@/lib/utils';
 
 type AnimeTab = 'tv' | 'movies';
+
+const tabs: { id: AnimeTab; label: string; icon: typeof Tv }[] = [
+  { id: 'tv', label: 'Anime Series', icon: Tv },
+  { id: 'movies', label: 'Anime Movies', icon: Clapperboard },
+];
 
 const Anime = () => {
   const [tab, setTab] = useState<AnimeTab>('tv');
@@ -33,75 +40,54 @@ const Anime = () => {
   const isLoading = tab === 'tv' ? tvLoading : moviesLoading;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <main className="px-4 pb-24 pt-28 md:px-12 md:pt-32">
+      <PageHeader
+        eyebrow="Library"
+        title="Anime"
+        description="Explore the best Japanese animation, from ongoing series to feature films."
+      />
 
-      <main className="pt-24 pb-20 px-4 md:px-12">
-        <div>
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Anime</h1>
-            <p className="text-muted-foreground">Explore the best Japanese animation</p>
-          </div>
+      <div className="mb-8 inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1">
+        {tabs.map(({ id, label, icon: Icon }) => {
+          const isActive = tab === id;
 
-          {/* Tab Switcher */}
-          <div className="flex gap-2 mb-8">
+          return (
             <button
-              onClick={() => handleTabChange('tv')}
+              key={id}
+              onClick={() => handleTabChange(id)}
               className={cn(
-                'px-6 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-primary/50',
-                tab === 'tv'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                'relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-200 md:px-5',
+                isActive ? 'text-white' : 'text-white/50 hover:text-white'
               )}
             >
-              📺 Anime Series
-            </button>
-            <button
-              onClick={() => handleTabChange('movies')}
-              className={cn(
-                'px-6 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none focus:ring-4 focus:ring-primary/50',
-                tab === 'movies'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              {isActive && (
+                <motion.span
+                  layoutId="anime-tab"
+                  transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  className="brand-gradient absolute inset-0 rounded-xl"
+                />
               )}
-            >
-              🎬 Anime Movies
+              <Icon size={16} className="relative" />
+              <span className="relative">{label}</span>
             </button>
-          </div>
+          );
+        })}
+      </div>
 
-          {/* Content Grid */}
-          <ContentGrid
-            items={currentData?.results || []}
-            type={tab === 'tv' ? 'tv' : 'movie'}
-            isLoading={isLoading}
-          />
+      <ContentGrid
+        items={currentData?.results || []}
+        type={tab === 'tv' ? 'tv' : 'movie'}
+        isLoading={isLoading}
+      />
 
-          {/* Pagination */}
-          {currentData && (
-            <div className="flex justify-center gap-4 mt-12">
-              <Button
-                variant="secondary"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                Previous
-              </Button>
-              <span className="flex items-center px-4 text-muted-foreground">
-                Page {page} of {Math.min(currentData.total_pages, 500)}
-              </span>
-              <Button
-                variant="secondary"
-                onClick={() => setPage((p) => p + 1)}
-                disabled={page >= Math.min(currentData.total_pages, 500)}
-              >
-                Next
-              </Button>
-            </div>
-          )}
-        </div>
-      </main>
-    </div>
+      {currentData && (
+        <Pagination
+          page={page}
+          totalPages={currentData.total_pages}
+          onChange={setPage}
+        />
+      )}
+    </main>
   );
 };
 

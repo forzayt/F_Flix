@@ -51,6 +51,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^14.14.0",
     "hls.js": "^1.6.15",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
@@ -93,14 +94,23 @@
     "appId": "com.forza.fflix",
     "productName": "F_Flix",
     "compression": "maximum",
-    "electronLanguages": ["en-US"],
+    "electronLanguages": [
+      "en-US"
+    ],
     "directories": {
       "app": "electron",
       "output": "dist-electron"
     },
     "win": {
       "icon": "electron/icon.ico",
-      "target": [{"target": "nsis", "arch": ["x64"]}]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "nsis": {
       "oneClick": true,

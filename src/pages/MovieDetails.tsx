@@ -1,14 +1,28 @@
-import { Star, Clock, Calendar, Play, Plus, Heart, Share2, List, Download, Eye, Globe, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getMovieDetails, getMovieVideos, getMovieCredits, getSimilarMovies, getBackdropUrl, getImageUrl } from '@/services/tmdb';
-import VideoPlayer from '@/components/VideoPlayer';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  Clock,
+  Eye,
+  Globe,
+  Play,
+  Star,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+import {
+  getMovieDetails,
+  getMovieVideos,
+  getMovieCredits,
+  getSimilarMovies,
+  getBackdropUrl,
+} from '@/services/tmdb';
 import CastSection from '@/components/CastSection';
 import MovieRow from '@/components/MovieRow';
 import { DetailsSkeleton } from '@/components/ContentSkeletons';
-import { Button } from '@/components/ui/button';
-
+import { easeOutExpo } from '@/lib/motion';
 
 const MovieDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,13 +54,15 @@ const MovieDetails = () => {
   });
 
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
-  const trailer = videos?.results.find((v) => v.type === 'Trailer' && v.site === 'YouTube') || videos?.results[0];
+  const trailer =
+    videos?.results.find((v) => v.type === 'Trailer' && v.site === 'YouTube') ||
+    videos?.results[0];
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <DetailsSkeleton />
       </div>
     );
@@ -54,16 +70,16 @@ const MovieDetails = () => {
 
   if (!movie) {
     return (
-      <div className="min-h-screen bg-background relative">
-        <button
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-          className="absolute top-4 left-4 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-black/50 hover:bg-black/70 border border-white/15 backdrop-blur-md text-white transition-all"
-        >
-          <ArrowLeft size={22} />
-        </button>
-        <div className="pt-20 flex items-center justify-center h-[50vh]">
-          <p className="text-muted-foreground text-xl">Movie not found</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
+        <div className="glass rounded-3xl px-8 py-10 text-center">
+          <p className="text-xl font-semibold text-white">Movie not found</p>
+          <p className="mt-2 text-sm text-white/45">It may have been removed or the link is invalid.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="brand-gradient mt-6 inline-flex h-11 items-center gap-2 rounded-2xl px-5 text-sm font-semibold text-white"
+          >
+            <ArrowLeft size={16} /> Go back
+          </button>
         </div>
       </div>
     );
@@ -74,178 +90,163 @@ const MovieDetails = () => {
   const formattedDate = releaseDate
     ? releaseDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     : 'N/A';
-  const runtime = movie.runtime ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : 'N/A';
+  const runtime = movie.runtime
+    ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`
+    : 'N/A';
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Hero Banner with Auto-playing Trailer */}
-      <div className="relative h-[85vh] w-full overflow-hidden">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-          className="absolute top-4 left-4 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-black/50 hover:bg-black/70 border border-white/15 backdrop-blur-md text-white transition-all"
-        >
-          <ArrowLeft size={22} />
-        </button>
-
+    <div className="min-h-screen text-white">
+      {/* Hero */}
+      <div className="relative h-[88vh] min-h-[620px] w-full overflow-hidden md:-ml-[84px]">
         {trailer ? (
-          <div className="absolute inset-0 pointer-events-none scale-150">
+          <div className="absolute inset-0 scale-150 pointer-events-none">
             <iframe
-              src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailer.key}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&vq=hd1080`}
-              className="w-full h-full object-cover"
+              src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=${
+                isMuted ? 1 : 0
+              }&controls=0&loop=1&playlist=${trailer.key}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&vq=hd1080`}
+              className="h-full w-full object-cover"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             />
-            {/* Volume Toggle */}
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="absolute bottom-32 right-12 z-50 p-3 bg-black/40 hover:bg-black/60 rounded-full border border-white/10 backdrop-blur-sm transition-all pointer-events-auto"
+              aria-label={isMuted ? 'Unmute trailer' : 'Mute trailer'}
+              className="glass pointer-events-auto absolute bottom-28 right-10 z-40 flex h-11 w-11 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/10 hover:text-white md:right-16"
             >
-              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+              {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
         ) : backdropUrl ? (
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${backdropUrl})` }}
+          <img
+            src={backdropUrl}
+            alt={movie.title}
+            className="absolute inset-0 h-full w-full object-cover"
           />
         ) : null}
 
-        {/* Cinematic Overlays - darker overlay so trailer appears darker */}
-        <div className="absolute inset-0 bg-black/2" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/10 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/45 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-black/80 via-black/25 to-transparent" />
 
-        {/* Main Content Overlay */}
-        <div className="absolute inset-0 flex flex-col justify-center px-4 md:px-12 pt-20">
-          <div className="max-w-3xl space-y-6">
-            {/* Genres Dot Separated */}
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
-              {movie.genres.map((genre, index) => (
-                <span key={genre.id} className="flex items-center">
-                  {genre.name}
-                  {index < movie.genres.length - 1 && (
-                    <span className="mx-2 h-1 w-1 rounded-full bg-gray-500" />
-                  )}
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="glass absolute left-4 top-20 z-50 flex h-11 w-11 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/10 hover:text-white md:left-[108px] md:top-24"
+        >
+          <ArrowLeft size={20} />
+        </button>
+
+        <div className="absolute inset-0 flex items-end pb-24 md:items-center md:pb-0">
+          <div className="w-full px-5 md:pl-[132px] md:pr-16">
+            <motion.div
+              initial={{ opacity: 0, y: 26 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: easeOutExpo }}
+              className="max-w-3xl space-y-5"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                {movie.genres.map((genre) => (
+                  <span
+                    key={genre.id}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-white/60 backdrop-blur-md"
+                  >
+                    {genre.name}
+                  </span>
+                ))}
+              </div>
+
+              <h1 className="font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-white text-shadow sm:text-5xl md:text-7xl">
+                {movie.title}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-white/65">
+                <span className="flex items-center gap-1.5">
+                  <Star size={15} className="fill-amber-400 text-amber-400" />
+                  <span className="text-white">{movie.vote_average.toFixed(1)}</span>
                 </span>
-              ))}
-            </div>
-
-            {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-              {movie.title}
-            </h1>
-
-            {/* Description with Read More */}
-            <div className="space-y-2">
-              <p className={`text-lg text-gray-200 leading-relaxed max-w-2xl ${!isOverviewExpanded && 'line-clamp-3'}`}>
-                {movie.overview}
-              </p>
-              {movie.overview.length > 200 && (
-                <button
-                  onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-                  className="text-white bg-white/20 hover:bg-white/30 px-3 py-1 rounded text-xs font-bold uppercase transition-colors"
-                >
-                  {isOverviewExpanded ? 'Read Less' : 'Read More'}
-                </button>
-              )}
-            </div>
-
-            {/* Metadata Row */}
-            <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-gray-300">
-              <div className="flex items-center gap-1.5">
-                <Eye size={18} />
-                <span>{Math.floor(movie.popularity * 100).toLocaleString()} views</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock size={18} />
-                <span>{runtime}</span>
-              </div>
-              <div className="flex items-center gap-1.5 font-bold text-white">
+                <span className="h-1 w-1 rounded-full bg-white/30" />
                 <span>{formattedDate}</span>
+                <span className="h-1 w-1 rounded-full bg-white/30" />
+                <span className="flex items-center gap-1.5">
+                  <Clock size={15} />
+                  {runtime}
+                </span>
+                <span className="h-1 w-1 rounded-full bg-white/30" />
+                <span className="flex items-center gap-1.5">
+                  <Eye size={15} />
+                  {Math.floor(movie.popularity * 100).toLocaleString()}
+                </span>
               </div>
-            </div>
 
-            {/* Language */}
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Globe size={16} />
-              <span>
-                {movie.spoken_languages && movie.spoken_languages.length > 0
-                  ? movie.spoken_languages.map(l => l.name).join(', ')
-                  : 'English'}
-              </span>
-            </div>
+              <div className="space-y-2">
+                <p
+                  className={`max-w-2xl text-sm leading-relaxed text-white/70 md:text-base ${
+                    !isOverviewExpanded && 'line-clamp-3'
+                  }`}
+                >
+                  {movie.overview}
+                </p>
+                {movie.overview.length > 200 && (
+                  <button
+                    onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
+                    className="text-xs font-semibold uppercase tracking-wider text-primary transition-colors hover:text-primary/80"
+                  >
+                    {isOverviewExpanded ? 'Read less' : 'Read more'}
+                  </button>
+                )}
+              </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-              <button
-                onClick={() => navigate(`/watch/movie/${movie.id}?autoplay=true`)}
-                className="flex items-center gap-2 bg-[#E50914] hover:bg-[#B20710] text-white px-8 py-3 rounded font-bold transition-all transform hover:scale-105"
-              >
-                <Play size={20} fill="white" />
-                Start Watching
-              </button>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={() => navigate(`/watch/movie/${movie.id}?autoplay=true`)}
+                  className="brand-gradient glow-primary inline-flex h-12 items-center gap-2 rounded-2xl px-7 text-sm font-semibold text-white transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]"
+                >
+                  <Play size={17} fill="currentColor" />
+                  Start watching
+                </button>
 
-              
-
-            
-            </div>
+                <div className="glass flex items-center gap-2 rounded-2xl px-4 py-3 text-xs text-white/55">
+                  <Globe size={15} />
+                  {movie.spoken_languages && movie.spoken_languages.length > 0
+                    ? movie.spoken_languages.map((l) => l.name).join(', ')
+                    : 'English'}
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Rest of the Content */}
-      <div className="px-4 md:px-12 py-12 bg-black">
-        {/* Poster and Secondary Info (Optional) */}
-        <div className="hidden lg:flex gap-12 mb-16 border-t border-white/5 pt-12">
-          {/* <div className="flex-shrink-0 w-[240px]">
-            <img
-              src={getImageUrl(movie.poster_path, 'w500')}
-              alt={movie.title}
-              className="w-full rounded-xl shadow-2xl ring-1 ring-white/10"
-            />
-          </div> */}
-          <div className="flex-1 space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div>
-                <h4 className="text-gray-500 text-sm uppercase font-bold mb-2">Rating</h4>
-                <div className="flex items-center gap-2">
-                  <Star className="text-yellow-500 fill-yellow-500" size={20} />
-                  <span className="text-xl font-bold">{movie.vote_average.toFixed(1)}</span>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-gray-500 text-sm uppercase font-bold mb-2">Vote Count</h4>
-                <span className="text-xl font-bold">{movie.vote_count.toLocaleString()}</span>
-              </div>
-              <div>
-                <h4 className="text-gray-500 text-sm uppercase font-bold mb-2">Tagline</h4>
-                <p className="italic text-gray-300">{movie.tagline || 'N/A'}</p>
-              </div>
-              <div>
-                <h4 className="text-gray-500 text-sm uppercase font-bold mb-2">Status</h4>
-                <span className="text-xl font-bold">{movie.status}</span>
-              </div>
+      {/* Content */}
+      <div className="relative z-10 -mt-16 px-4 pb-24 md:px-12">
+        <div className="glass-highlight glass grid grid-cols-2 gap-4 rounded-3xl p-5 md:grid-cols-4 md:p-6">
+          {[
+            { label: 'Rating', value: movie.vote_average.toFixed(1) },
+            { label: 'Votes', value: movie.vote_count.toLocaleString() },
+            { label: 'Status', value: movie.status },
+            { label: 'Tagline', value: movie.tagline || 'N/A' },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-2xl bg-white/[0.03] p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
+                {stat.label}
+              </p>
+              <p className="mt-1.5 line-clamp-2 text-sm font-semibold text-white/90">
+                {stat.value}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* Cast */}
         {credits?.cast && <CastSection cast={credits.cast} />}
 
-        {/* Similar Movies */}
         {similar?.results && similar.results.length > 0 && (
           <MovieRow
             title="Similar Movies"
             items={similar.results}
             type="movie"
-            className="mt-12"
+            className="mt-10"
           />
         )}
       </div>
-
-      <div className="pb-20" />
     </div>
   );
 };

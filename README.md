@@ -55,7 +55,7 @@ Get the latest Windows desktop app (no install or build required):
   - `src/services/tmdb.ts`: Client-side API integration for fetching public media metadata.
   - `src/constants/sources.ts` & `src/constants/livetv.m3u`: Definitions for external third-party source endpoints and live TV playlists.
   - `src/components/HLSPlayer.tsx`, `StreamPlayer.tsx`, `VideoPlayer.tsx`: Modular video player components.
-  - `src/components/TVNavigationHandler.tsx`: Keyboard/TV-style directional navigation support.
+  - `src/components/ContentSkeletons.tsx`: Reusable shimmer skeleton placeholders for grids, rows, hero, details, and player views.
 
 ### 3. Electron Windows Desktop Wrapper (`electron/`)
 F-Flix includes a lightweight desktop wrapper in [`electron/main.cjs`](electron/main.cjs) designed for Windows:

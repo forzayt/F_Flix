@@ -1,61 +1,108 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Movie, TVShow } from '@/services/tmdb';
 import MovieCard from './MovieCard';
 import DraggableCarousel, { type CarouselApi } from './DraggableCarousel';
 import { cn } from '@/lib/utils';
+import { staggerContainer } from '@/lib/motion';
 
 interface MovieRowProps {
   title: string;
   items: (Movie | TVShow)[];
   type: 'movie' | 'tv';
   className?: string;
+  seeAllTo?: string;
 }
 
-const MovieRow = ({ title, items, type, className }: MovieRowProps) => {
+const MovieRow = ({ title, items, type, className, seeAllTo }: MovieRowProps) => {
   const [api, setApi] = useState<CarouselApi | undefined>(undefined);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+
+  useEffect(() => {
+    if (!api) return;
+    const update = () => {
+      setCanPrev(api.canScrollPrev());
+      setCanNext(api.canScrollNext());
+    };
+    update();
+    api.on('select', update);
+    api.on('reInit', update);
+    return () => {
+      api.off('select', update);
+      api.off('reInit', update);
+    };
+  }, [api]);
 
   if (!items.length) return null;
 
+  const seeAll = seeAllTo ?? (type === 'movie' ? '/movies' : '/tv-series');
+
   return (
-    <section className={cn('relative py-6', className)}>
-      <h2 className="text-xl md:text-2xl font-bold mb-4 px-4 md:px-12">{title}</h2>
+    <motion.section
+      variants={staggerContainer}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-60px' }}
+      className={cn('relative py-5', className)}
+    >
+      <div className="mb-4 flex items-center justify-between px-4 md:px-12">
+        <h2 className="font-display text-xl font-bold tracking-tight text-white md:text-2xl">
+          {title}
+        </h2>
+        <Link
+          to={seeAll}
+          className="group flex items-center gap-1 text-xs font-medium text-white/45 transition-colors hover:text-white"
+        >
+          See all
+          <ChevronRight
+            size={14}
+            className="transition-transform duration-300 group-hover:translate-x-0.5"
+          />
+        </Link>
+      </div>
 
       <div className="group/row relative">
-        {/* Left Arrow */}
-        <button
+        <motion.button
           onClick={() => api?.scrollPrev()}
-          disabled={!api?.canScrollPrev()}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity hover:bg-background focus:bg-background ml-2 outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
+          disabled={!canPrev}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label="Scroll left"
+          className="glass absolute left-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-white/80 opacity-0 transition-opacity duration-300 hover:bg-white/10 hover:text-white disabled:opacity-0 group-hover/row:opacity-100 md:left-4 md:flex"
         >
-          <ChevronLeft size={24} />
-        </button>
+          <ChevronLeft size={20} />
+        </motion.button>
 
         <DraggableCarousel
           setApi={setApi}
-          className="px-4 md:px-12 py-4 -my-4"
-          slideClassName="max-w-[130px] md:max-w-[210px]"
+          className="px-4 py-3 md:px-12"
+          slideClassName="max-w-[150px] md:max-w-[185px]"
         >
           {items.map((item) => (
             <MovieCard
               key={item.id}
               item={item}
               type={type}
-              className="w-[120px] md:w-[160px] focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-[125px] md:w-[165px]"
             />
           ))}
         </DraggableCarousel>
 
-        {/* Right Arrow */}
-        <button
+        <motion.button
           onClick={() => api?.scrollNext()}
-          disabled={!api?.canScrollNext()}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover/row:opacity-100 focus:opacity-100 transition-opacity hover:bg-background focus:bg-background mr-2 outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
+          disabled={!canNext}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label="Scroll right"
+          className="glass absolute right-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-white/80 opacity-0 transition-opacity duration-300 hover:bg-white/10 hover:text-white disabled:opacity-0 group-hover/row:opacity-100 md:right-4 md:flex"
         >
-          <ChevronRight size={24} />
-        </button>
+          <ChevronRight size={20} />
+        </motion.button>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

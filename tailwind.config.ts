@@ -15,7 +15,11 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        display: ['Bebas Neue', 'sans-serif'],
+        display: ['Sora', 'Inter', 'sans-serif'],
+      },
+      boxShadow: {
+        glow: '0 18px 60px -22px hsl(var(--brand-glow) / 0.55)',
+        'glow-lg': '0 30px 90px -30px hsl(var(--brand-glow) / 0.65)',
       },
       colors: {
         border: "hsl(var(--border))",
@@ -84,6 +88,14 @@ export default {
           from: { opacity: "0", transform: "translateX(-20px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        "float-slow": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "50%": { transform: "translate3d(0, -18px, 0) scale(1.04)" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { opacity: "0.45" },
+          "50%": { opacity: "0.8" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -91,6 +103,8 @@ export default {
         "fade-in": "fade-in 0.5s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
         "slide-in": "slide-in 0.4s ease-out",
+        "float-slow": "float-slow 12s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 6s ease-in-out infinite",
       },
     },
   },

@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Star, Play } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Play, Star } from 'lucide-react';
 import { getImageUrl, Movie, TVShow } from '@/services/tmdb';
 import { cn } from '@/lib/utils';
+import { staggerItem } from '@/lib/motion';
 
 interface MovieCardProps {
   item: Movie | TVShow;
@@ -15,47 +17,52 @@ const MovieCard = ({ item, type, className }: MovieCardProps) => {
   const year = date ? new Date(date).getFullYear() : 'N/A';
 
   return (
-    <Link
-      to={`/${type}/${item.id}`}
-      className={cn(
-        'group relative flex-shrink-0 w-[160px] md:w-[200px] transition-all duration-300 hover:scale-105 hover:z-10 focus:scale-105 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary rounded-lg p-1',
-        className
-      )}
+    <motion.div
+      variants={staggerItem}
+      whileHover={{ y: -8, scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+      className={cn('group/card relative w-[150px] shrink-0 md:w-[185px]', className)}
     >
-      {/* Poster */}
-      <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-secondary">
-        <img
-          src={getImageUrl(item.poster_path, 'w500')}
-          alt={title}
-          className="w-full h-full object-cover transition-opacity duration-300"
-          loading="lazy"
-        />
+      <Link to={`/${type}/${item.id}`} className="block focus:outline-none">
+        <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-secondary shadow-[0_18px_45px_-25px_rgba(0,0,0,0.95)]">
+          <img
+            src={getImageUrl(item.poster_path, 'w500')}
+            alt={title}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-110"
+          />
 
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300" />
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent opacity-70 transition-opacity duration-300 group-hover/card:opacity-100" />
 
-        {/* Play Button */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300">
-          <div className="bg-primary rounded-full p-3 shadow-lg transform scale-75 group-hover:scale-100 group-focus:scale-100 transition-transform duration-300">
-            <Play size={24} fill="currentColor" className="text-primary-foreground ml-1" />
+          {/* Play button */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover/card:opacity-100">
+            <span className="brand-gradient glow-primary flex h-12 w-12 scale-75 items-center justify-center rounded-full text-white transition-transform duration-300 group-hover/card:scale-100">
+              <Play size={18} fill="currentColor" className="ml-0.5" />
+            </span>
+          </div>
+
+          {/* Rating */}
+          <div className="absolute right-2 top-2 flex items-center gap-1 rounded-lg border border-white/10 bg-black/55 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
+            <Star size={11} className="fill-amber-400 text-amber-400" />
+            {item.vote_average.toFixed(1)}
+          </div>
+
+          {/* Progress hint */}
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-white/10">
+            <span className="brand-gradient block h-full w-0 transition-all duration-500 group-hover/card:w-1/3" />
           </div>
         </div>
 
-        {/* Rating Badge */}
-        <div className="absolute top-2 right-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-md">
-          <Star size={12} className="text-yellow-500 fill-yellow-500" />
-          <span className="text-xs font-semibold">{item.vote_average.toFixed(1)}</span>
+        <div className="mt-3 space-y-1 px-0.5">
+          <h3 className="line-clamp-2 text-sm font-medium text-white/90 transition-colors group-hover/card:text-white">
+            {title}
+          </h3>
+          <p className="text-xs text-white/40">{year}</p>
         </div>
-      </div>
-
-      {/* Info */}
-      <div className="mt-3 space-y-1">
-        <h3 className="text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-          {title}
-        </h3>
-        <p className="text-xs text-muted-foreground">{year}</p>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   );
 };
 
