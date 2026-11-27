@@ -116,7 +116,7 @@ const Live = () => {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: easeOutExpo, delay: 0.08 }}
-          className="glass flex h-[calc(100vh-13rem)] flex-col rounded-3xl p-4"
+          className="glass flex h-[60vh] flex-col rounded-3xl p-4 lg:h-[calc(100vh-13rem)]"
         >
           <div className="relative mb-4">
             <Search

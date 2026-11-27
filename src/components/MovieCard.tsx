@@ -22,9 +22,12 @@ const MovieCard = ({ item, type, className }: MovieCardProps) => {
       whileHover={{ y: -8, scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-      className={cn('group/card relative w-[150px] shrink-0 md:w-[185px]', className)}
+      className={cn('group/card relative w-[150px] shrink-0', className)}
     >
-      <Link to={`/${type}/${item.id}`} className="block focus:outline-none">
+      <Link
+        to={`/${type}/${item.id}`}
+        className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
         <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-secondary shadow-[0_18px_45px_-25px_rgba(0,0,0,0.95)]">
           <img
             src={getImageUrl(item.poster_path, 'w500')}

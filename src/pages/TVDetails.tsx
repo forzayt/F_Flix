@@ -102,7 +102,7 @@ const TVDetails = () => {
       {/* Hero */}
       <div className="relative h-[88vh] min-h-[620px] w-full overflow-hidden md:-ml-[84px]">
         {trailer ? (
-          <div className="absolute inset-0 scale-150 pointer-events-none">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden bg-black">
             <iframe
               src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=${
                 isMuted ? 1 : 0

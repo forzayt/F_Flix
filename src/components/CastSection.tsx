@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Cast, getImageUrl } from '@/services/tmdb';
 import DraggableCarousel from './DraggableCarousel';
-import { staggerContainer, staggerItem } from '@/lib/motion';
+import { staggerItem } from '@/lib/motion';
 
 interface CastSectionProps {
   cast: Cast[];

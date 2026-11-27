@@ -79,9 +79,9 @@ export const HeroSkeleton = () => (
 
 /** Detail page placeholder (hero banner + title/meta/overview). */
 export const DetailsSkeleton = () => (
-  <div className="pt-20" aria-busy="true" aria-label="Loading details">
+  <div className="pt-20 md:-ml-[84px]" aria-busy="true" aria-label="Loading details">
     <Skeleton className="h-[60vh] w-full rounded-none" />
-    <div className="max-w-4xl space-y-4 px-4 py-8 md:px-12">
+    <div className="max-w-4xl space-y-4 px-4 py-8 md:pl-[132px] md:pr-12">
       <Skeleton className="h-10 w-2/3 rounded-xl" />
       <Skeleton className="h-6 w-1/3 rounded-lg" />
       <Skeleton className="h-4 w-full rounded-md" />

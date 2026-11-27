@@ -9,9 +9,21 @@ interface StreamPlayerProps {
   season?: number;
   episode?: number;
   title: string;
+  /** Stretch the player to fill its parent instead of using a 16:9 box. */
+  fill?: boolean;
+  className?: string;
 }
 
-const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: StreamPlayerProps) => {
+const StreamPlayer = ({
+  id,
+  imdbId,
+  type,
+  season = 1,
+  episode = 1,
+  title,
+  fill = false,
+  className,
+}: StreamPlayerProps) => {
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [sourceName, setSourceName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +50,13 @@ const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: Stre
   }, [id, imdbId, type, season, episode]);
 
   return (
-    <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-2xl ring-1 ring-white/10">
+    <div
+      className={cn(
+        'relative w-full overflow-hidden bg-black',
+        fill ? 'h-full' : 'aspect-video rounded-xl shadow-2xl ring-1 ring-white/10',
+        className
+      )}
+    >
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-zinc-950 z-10 transition-opacity duration-500">
           <div className="flex flex-col items-center gap-5">
@@ -50,7 +68,7 @@ const StreamPlayer = ({ id, imdbId, type, season = 1, episode = 1, title }: Stre
               <p className="text-white font-semibold tracking-wide">
                 {sourceName ? `Connecting to ${sourceName}...` : 'Finding a working server...'}
               </p>
-              <p className="text-xs text-muted-foreground">Preparing your high quality stream</p>
+              <p className="text-xs text-white/45">Preparing your high quality stream</p>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative min-h-screen">
       {/* Ambient aurora background */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="aurora left-[-12%] top-[-8%] h-[440px] w-[440px] animate-float-slow bg-primary/25" />
         <div className="aurora right-[-10%] top-[16%] h-[380px] w-[380px] animate-pulse-glow bg-blue-500/15" />
         <div className="aurora bottom-[-16%] left-[28%] h-[420px] w-[420px] bg-fuchsia-500/10" />
@@ -24,7 +24,9 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
 
       <main
         className={
-          isPlayer ? 'min-h-screen' : 'min-h-screen pb-24 md:pb-0 md:pl-[84px]'
+          isPlayer
+            ? 'relative z-10 min-h-screen'
+            : 'relative z-10 min-h-screen pb-24 md:pb-0 md:pl-[84px]'
         }
       >
         <motion.div

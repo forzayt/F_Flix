@@ -56,7 +56,6 @@
     background-image:
       radial-gradient(1100px 700px at 12% -12%, hsl(var(--brand-from) / 0.16), transparent 60%),
       radial-gradient(900px 640px at 105% -5%, hsl(220 90% 60% / 0.1), transparent 58%);
-    background-attachment: fixed;
     overflow-x: hidden;
   }
 
@@ -101,10 +100,6 @@
 }
 
 @layer utilities {
-  .font-display {
-    font-family: 'Sora', 'Inter', sans-serif;
-  }
-
   .text-shadow {
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
   }
