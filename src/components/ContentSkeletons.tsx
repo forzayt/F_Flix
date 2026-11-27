@@ -79,7 +79,7 @@ export const HeroSkeleton = () => (
 
 /** Detail page placeholder (hero banner + title/meta/overview). */
 export const DetailsSkeleton = () => (
-  <div className="pt-20 md:-ml-[84px]" aria-busy="true" aria-label="Loading details">
+  <div className="md:-ml-[84px]" aria-busy="true" aria-label="Loading details">
     <Skeleton className="h-[60vh] w-full rounded-none" />
     <div className="max-w-4xl space-y-4 px-4 py-8 md:pl-[132px] md:pr-12">
       <Skeleton className="h-10 w-2/3 rounded-xl" />
@@ -94,28 +94,28 @@ export const DetailsSkeleton = () => (
   </div>
 );
 
-/** Player page placeholder that keeps the same header + video frame layout. */
+/** Player page placeholder that matches the full-size player layout. */
 export const PlayerSkeleton = () => (
-  <div className="min-h-screen bg-background" aria-busy="true" aria-label="Loading player">
-    <div className="flex items-center justify-between border-b border-white/5 bg-gradient-to-b from-background to-transparent p-4 md:px-8">
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-10 w-10 rounded-full" />
+  <div className="min-h-screen w-full bg-black" aria-busy="true" aria-label="Loading player">
+    <div className="flex h-16 items-center justify-between border-b border-white/[0.06] bg-black/70 px-3 md:px-6">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-10 w-10 rounded-xl" />
         <div className="space-y-2">
-          <Skeleton className="h-5 w-40 rounded-md" />
+          <Skeleton className="h-4 w-40 rounded-md" />
           <Skeleton className="h-3 w-24 rounded-md" />
         </div>
       </div>
-      <Skeleton className="h-10 w-10 rounded-full" />
+      <Skeleton className="h-10 w-10 rounded-xl" />
     </div>
-    <main className="px-4 py-6 md:px-12">
-      <div className="mx-auto max-w-6xl space-y-6">
-        <Skeleton className="aspect-video w-full rounded-2xl" />
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-1/2 rounded-lg" />
-          <Skeleton className="h-4 w-full max-w-4xl rounded-md" />
-          <Skeleton className="h-4 w-2/3 max-w-4xl rounded-md" />
-        </div>
+
+    <Skeleton className="h-[calc(100dvh-4rem)] min-h-[320px] w-full rounded-none" />
+
+    <div className="w-full border-t border-white/[0.06] px-4 py-6 md:px-8">
+      <div className="mx-auto w-full max-w-5xl space-y-4">
+        <Skeleton className="h-8 w-1/2 rounded-lg" />
+        <Skeleton className="h-4 w-full max-w-4xl rounded-md" />
+        <Skeleton className="h-4 w-2/3 max-w-4xl rounded-md" />
       </div>
-    </main>
+    </div>
   </div>
 );

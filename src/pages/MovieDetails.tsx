@@ -104,7 +104,9 @@ const MovieDetails = () => {
               src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=${
                 isMuted ? 1 : 0
               }&controls=0&loop=1&playlist=${trailer.key}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&vq=hd1080`}
-              className="h-full w-full object-cover"
+              title={`${movie.title} trailer`}
+              tabIndex={-1}
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[100vh] w-[177.78vh] min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             />
             <button

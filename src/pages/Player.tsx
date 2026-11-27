@@ -103,9 +103,9 @@ const Player = () => {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: easeOutExpo }}
-        className="sticky top-0 z-30 w-full border-b border-white/[0.06] bg-black/70 backdrop-blur-2xl"
+        className="sticky top-0 z-30 h-16 w-full border-b border-white/[0.06] bg-black/70 backdrop-blur-2xl"
       >
-        <div className="flex w-full items-center justify-between gap-3 px-3 py-2.5 md:px-6">
+        <div className="flex h-full w-full items-center justify-between gap-3 px-3 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               onClick={() => navigate(-1)}
@@ -179,7 +179,7 @@ const Player = () => {
         transition={{ duration: 0.45, ease: easeOutExpo }}
         className="w-full"
       >
-        <div className="relative h-[calc(100dvh-4.25rem)] min-h-[320px] w-full overflow-hidden bg-black">
+        <div className="relative h-[calc(100dvh-4rem)] min-h-[320px] w-full overflow-hidden bg-black">
           <StreamPlayer
             id={itemId}
             imdbId={movieItem ? movieItem.imdb_id : tvItem?.external_ids?.imdb_id}
