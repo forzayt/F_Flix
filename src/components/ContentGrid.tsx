@@ -1,6 +1,6 @@
 import { Movie, TVShow } from '@/services/tmdb';
 import MovieCard from './MovieCard';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ContentGridSkeleton } from './ContentSkeletons';
 
 interface ContentGridProps {
   items: (Movie | TVShow)[];
@@ -10,17 +10,7 @@ interface ContentGridProps {
 
 const ContentGrid = ({ items, type, isLoading }: ContentGridProps) => {
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-        {Array.from({ length: 18 }).map((_, i) => (
-          <div key={i} className="space-y-3">
-            <Skeleton className="aspect-[2/3] rounded-lg" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-3 w-1/2" />
-          </div>
-        ))}
-      </div>
-    );
+    return <ContentGridSkeleton count={18} />;
   }
 
   if (!items.length) {

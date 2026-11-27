@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { getMovieDetails, getTVShowDetails, MovieDetails, TVShowDetails } from '@/services/tmdb';
 import StreamPlayer from '@/components/StreamPlayer';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { PlayerSkeleton } from '@/components/ContentSkeletons';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { saveToContinueWatching } from '@/lib/continueWatching';
 
@@ -49,14 +49,7 @@ const Player = () => {
   }, [item, itemId, type, season, episode, isMovie, movieItem, tvItem]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-full max-w-6xl px-4 space-y-4">
-          <Skeleton className="aspect-video w-full rounded-xl" />
-          <Skeleton className="h-8 w-1/3" />
-        </div>
-      </div>
-    );
+    return <PlayerSkeleton />;
   }
 
   if (!item) {

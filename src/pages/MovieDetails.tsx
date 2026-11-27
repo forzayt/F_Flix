@@ -6,7 +6,7 @@ import { getMovieDetails, getMovieVideos, getMovieCredits, getSimilarMovies, get
 import VideoPlayer from '@/components/VideoPlayer';
 import CastSection from '@/components/CastSection';
 import MovieRow from '@/components/MovieRow';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DetailsSkeleton } from '@/components/ContentSkeletons';
 import { Button } from '@/components/ui/button';
 
 
@@ -47,14 +47,7 @@ const MovieDetails = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="pt-20">
-          <Skeleton className="h-[60vh] w-full" />
-          <div className="px-4 md:px-12 py-8 space-y-4">
-            <Skeleton className="h-10 w-1/2" />
-            <Skeleton className="h-6 w-1/4" />
-            <Skeleton className="h-24 w-full" />
-          </div>
-        </div>
+        <DetailsSkeleton />
       </div>
     );
   }

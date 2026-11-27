@@ -55,19 +55,14 @@
     font-family: 'Inter', sans-serif;
   }
 
-  /* TV Optimized Focus Styles */
+  /* Keyboard accessibility without layout thrashing */
   :focus {
-    outline: none !important;
+    outline: none;
   }
 
   :focus-visible {
-    @apply ring-4 ring-primary ring-offset-4 ring-offset-background;
-  }
-
-  /* Ensure focused items are always above others */
-  *:focus {
-    z-index: 50 !important;
-    position: relative;
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 
   h1, h2, h3 {
@@ -102,5 +97,37 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: hsl(var(--muted));
+  }
+
+  .skeleton-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--foreground) / 0.07) 50%,
+      transparent 100%
+    );
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::after {
+    animation: none;
   }
 }

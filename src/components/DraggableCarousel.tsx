@@ -50,10 +50,7 @@ const DraggableCarousel = ({
       ref={emblaRef}
       className={cn('w-full overflow-hidden cursor-grab active:cursor-grabbing select-none touch-pan-x', className)}
     >
-      <div
-        className={cn('flex items-start gap-4 will-change-transform', contentClassName)}
-        style={{ backfaceVisibility: 'hidden' as const  }}
-      >
+      <div className={cn('flex items-start gap-4', contentClassName)}>
         {React.Children.map(children, (child) =>
           child != null ? (
             <div className={cn('flex-shrink-0 w-fit', slideClassName)}>{child}</div>

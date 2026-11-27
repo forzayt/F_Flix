@@ -13,14 +13,12 @@ import TVDetails from "./pages/TVDetails";
 import Player from "./pages/Player";
 import Live from "./pages/Live";
 import NotFound from "./pages/NotFound";
-import TVNavigationHandler from "./components/TVNavigationHandler";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <TVNavigationHandler />
       <Toaster />
       <Sonner />
       <BrowserRouter>

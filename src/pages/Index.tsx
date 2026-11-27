@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import MovieRow from '@/components/MovieRow';
 import DraggableCarousel from '@/components/DraggableCarousel';
-import { Skeleton } from '@/components/ui/skeleton';
+import { HeroSkeleton, MovieRowSkeleton } from '@/components/ContentSkeletons';
 import { getContinueWatching, removeFromContinueWatching, ContinueWatchingItem } from '@/lib/continueWatching';
 
 const Index = () => {
@@ -28,22 +28,22 @@ const Index = () => {
     queryFn: () => getTrending('all', 'week'),
   });
 
-  const { data: popularMovies } = useQuery({
+  const { data: popularMovies, isLoading: popularMoviesLoading } = useQuery({
     queryKey: ['popularMovies'],
     queryFn: () => getPopularMovies(),
   });
 
-  const { data: topRatedMovies } = useQuery({
+  const { data: topRatedMovies, isLoading: topRatedMoviesLoading } = useQuery({
     queryKey: ['topRatedMovies'],
     queryFn: () => getTopRatedMovies(),
   });
 
-  const { data: popularTVShows } = useQuery({
+  const { data: popularTVShows, isLoading: popularTVShowsLoading } = useQuery({
     queryKey: ['popularTVShows'],
     queryFn: () => getPopularTVShows(),
   });
 
-  const { data: indianMovies } = useQuery({
+  const { data: indianMovies, isLoading: indianMoviesLoading } = useQuery({
     queryKey: ['indianMovies'],
     queryFn: () => getIndianMovies(),
   });
@@ -56,7 +56,7 @@ const Index = () => {
 
       {/* Hero Section */}
       {trendingLoading ? (
-        <div className="h-[85vh] bg-secondary animate-pulse" />
+        <HeroSkeleton />
       ) : heroItems.length > 0 ? (
         <HeroSection items={heroItems} />
       ) : null}
@@ -116,39 +116,55 @@ const Index = () => {
         )}
 
         {/* Popular Movies */}
-        {popularMovies?.results && (
-          <MovieRow
-            title="🎬 Popular Movies"
-            items={popularMovies.results}
-            type="movie"
-          />
+        {popularMoviesLoading ? (
+          <MovieRowSkeleton />
+        ) : (
+          popularMovies?.results && (
+            <MovieRow
+              title="🎬 Popular Movies"
+              items={popularMovies.results}
+              type="movie"
+            />
+          )
         )}
 
         {/* Top Rated Movies */}
-        {topRatedMovies?.results && (
-          <MovieRow
-            title="⭐ Top Rated Movies"
-            items={topRatedMovies.results}
-            type="movie"
-          />
+        {topRatedMoviesLoading ? (
+          <MovieRowSkeleton />
+        ) : (
+          topRatedMovies?.results && (
+            <MovieRow
+              title="⭐ Top Rated Movies"
+              items={topRatedMovies.results}
+              type="movie"
+            />
+          )
         )}
 
         {/* Popular TV Shows */}
-        {popularTVShows?.results && (
-          <MovieRow
-            title="📺 Popular TV Shows"
-            items={popularTVShows.results}
-            type="tv"
-          />
+        {popularTVShowsLoading ? (
+          <MovieRowSkeleton />
+        ) : (
+          popularTVShows?.results && (
+            <MovieRow
+              title="📺 Popular TV Shows"
+              items={popularTVShows.results}
+              type="tv"
+            />
+          )
         )}
 
         {/* Indian Popular */}
-        {indianMovies?.results && (
-          <MovieRow
-            title="Popular on India"
-            items={indianMovies.results}
-            type="movie"
-          />
+        {indianMoviesLoading ? (
+          <MovieRowSkeleton />
+        ) : (
+          indianMovies?.results && (
+            <MovieRow
+              title="Popular on India"
+              items={indianMovies.results}
+              type="movie"
+            />
+          )
         )}
       </div>
     </div>
