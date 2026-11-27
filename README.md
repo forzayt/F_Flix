@@ -4,6 +4,18 @@ A modern, responsive media discovery and streaming aggregator built with **React
 
 ---
 
+## ⬇️ Download
+
+Get the latest Windows desktop app (no install or build required):
+
+[![Download F-Flix Launcher](https://img.shields.io/badge/Download-Latest%20Launcher-2ea44f?style=for-the-badge&logo=windows)](https://github.com/forzayt/F_Flix/releases/download/V1/F_Flix.Setup.1.0.0.exe)
+
+**[⬇️ Download F_Flix.Setup.1.0.0.exe (Latest)](https://github.com/forzayt/F_Flix/releases/download/V1/F_Flix.Setup.1.0.0.exe)**
+
+> Looking for older or newer builds? See all [Releases](https://github.com/forzayt/F_Flix/releases).
+
+---
+
 ## ⚠️ Anti-Piracy & Legal Disclaimer
 
 **Please read this notice carefully before using or contributing to this project.**
@@ -111,4 +123,5 @@ npm run build
 ```bash
 npm run electron
 ```
+> **Just want to use the app?** Skip the build steps and grab the prebuilt installer from [Download](#️-download) above.
 > **Windows PowerShell note:** If PowerShell blocks `npm` scripts due to execution policy, run `npm.cmd run electron` instead.
