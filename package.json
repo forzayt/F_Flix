@@ -96,10 +96,10 @@
     "electronLanguages": [
       "en-US"
     ],
-    "files": [
-      "electron/**/*",
-      "package.json"
-    ],
+    "directories": {
+      "app": "electron",
+      "output": "dist-electron"
+    },
     "win": {
       "icon": "electron/icon.ico",
       "target": [

@@ -1,0 +1,8 @@
+{
+  "name": "f-flix",
+  "version": "1.0.0",
+  "description": "Forza Flix (F-Flix) Desktop App",
+  "author": "Forza",
+  "main": "main.cjs",
+  "dependencies": {}
+}
