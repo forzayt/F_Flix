@@ -2,6 +2,8 @@
   "name": "vite_react_shadcn_ts",
   "private": true,
   "version": "0.0.0",
+  "description": "Forza Flix (F-Flix) Desktop App",
+  "author": "Forza",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -95,11 +97,15 @@
       "package.json"
     ],
     "win": {
-      "target": "portable",
-      "arch": [
-        "x64"
-      ],
-      "icon": "electron/icon.ico"
+      "icon": "electron/icon.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     }
   }
 }
