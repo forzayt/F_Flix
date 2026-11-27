@@ -1,4 +1,5 @@
 const { app, BrowserWindow, shell, Menu, net } = require('electron');
+const path = require('path');
 
 const CONFIG_URL = 'https://forzayt.github.io/F_Flix/src/config/url.json';
 
@@ -107,6 +108,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     title: 'F-Flix',
+    icon: path.join(__dirname, 'icon.ico'),
     backgroundColor: '#0f172a',
     autoHideMenuBar: true,
     webPreferences: {
