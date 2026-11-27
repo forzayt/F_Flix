@@ -1,0 +1,13 @@
+[package]
+name = "f_flix"
+version = "1.0.0"
+description = "F-Flix desktop app"
+authors = ["Forza"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
