@@ -4,5 +4,26 @@
   "description": "Forza Flix (F-Flix) Desktop App",
   "author": "Forza",
   "main": "main.cjs",
-  "dependencies": {}
+  "dependencies": {},
+  "build": {
+    "appId": "com.forza.fflix",
+    "productName": "F_Flix",
+    "electronVersion": "45.5.0",
+    "compression": "maximum",
+    "electronLanguages": ["en-US"],
+    "directories": {
+      "output": "../dist-electron"
+    },
+    "files": ["main.cjs", "package.json", "icon.ico"],
+    "win": {
+      "icon": "icon.ico",
+      "target": [{"target": "nsis", "arch": ["x64"]}]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
 }
