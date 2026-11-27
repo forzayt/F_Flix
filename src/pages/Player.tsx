@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Home, Play } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import {
   getMovieDetails,
   getTVShowDetails,
@@ -10,20 +9,11 @@ import {
   TVShowDetails,
 } from '@/services/tmdb';
 import StreamPlayer from '@/components/StreamPlayer';
-import { PlayerSkeleton } from '@/components/ContentSkeletons';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { saveToContinueWatching } from '@/lib/continueWatching';
-import { easeOutExpo } from '@/lib/motion';
 
 const Player = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const itemId = Number(id);
@@ -59,205 +49,51 @@ const Player = () => {
   }, [item, itemId, type, season, episode, isMovie, movieItem, tvItem]);
 
   if (isLoading) {
-    return <PlayerSkeleton />;
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-black">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+      </div>
+    );
   }
 
   if (!item) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
-        <div className="glass rounded-3xl px-8 py-10 text-center">
-          <h1 className="text-2xl font-bold text-white">Content not found</h1>
-          <p className="mt-2 text-sm text-white/45">
-            This title is unavailable or the link is invalid.
-          </p>
-          <button
-            onClick={() => navigate(-1)}
-            className="brand-gradient mt-6 inline-flex h-11 items-center gap-2 rounded-2xl px-5 text-sm font-semibold text-white"
-          >
-            <ChevronLeft size={16} /> Go back
-          </button>
-        </div>
+      <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-black px-4">
+        <p className="text-xl font-semibold text-white">Content not found</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-6 text-sm font-semibold text-white hover:bg-white/20"
+        >
+          <ArrowLeft size={16} /> Go back
+        </button>
       </div>
     );
   }
 
   const title = movieItem ? movieItem.title : tvItem?.name || '';
-  const date = movieItem ? movieItem.release_date : tvItem?.first_air_date;
-  const year = date ? new Date(date).getFullYear() : 'N/A';
-
-  const handleSeasonChange = (s: string) => {
-    setSearchParams({ s, e: '1' });
-  };
-
-  const handleEpisodeChange = (e: string) => {
-    setSearchParams({ s: String(season), e });
-  };
-
-  const episodeCount =
-    tvItem?.seasons?.find((s) => s.season_number === season)?.episode_count || 0;
 
   return (
-    <div className="min-h-screen w-full bg-black">
-      {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: easeOutExpo }}
-        className="sticky top-0 z-30 h-16 w-full border-b border-white/[0.06] bg-black/70 backdrop-blur-2xl"
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
+      {/* Minimal floating back button */}
+      <button
+        onClick={() => navigate(-1)}
+        aria-label="Go back"
+        className="fixed left-4 top-4 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-black/50 text-white/75 backdrop-blur-md transition-colors hover:bg-black/80 hover:text-white"
       >
-        <div className="flex h-full w-full items-center justify-between gap-3 px-3 md:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              onClick={() => navigate(-1)}
-              aria-label="Go back"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="min-w-0">
-              <h1 className="line-clamp-1 font-display text-base font-semibold text-white md:text-lg">
-                {title}
-              </h1>
-              {!isMovie && (
-                <p className="flex items-center gap-1 text-xs text-white/45">
-                  <span>Season {season}</span>
-                  <ChevronRight size={11} />
-                  <span>Episode {episode}</span>
-                </p>
-              )}
-            </div>
-          </div>
+        <ArrowLeft size={20} />
+      </button>
 
-          <div className="flex shrink-0 items-center gap-2 md:gap-3">
-            {!isMovie && tvItem && (
-              <div className="hidden items-center gap-2 md:flex">
-                <Select value={String(season)} onValueChange={handleSeasonChange}>
-                  <SelectTrigger className="h-10 w-[124px] rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80 focus:ring-primary/50">
-                    <SelectValue placeholder="Season" />
-                  </SelectTrigger>
-                  <SelectContent className="glass-strong border-white/10 text-white">
-                    {tvItem.seasons
-                      ?.filter((s) => s.season_number > 0)
-                      .map((s) => (
-                        <SelectItem key={s.id} value={String(s.season_number)}>
-                          Season {s.season_number}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={String(episode)} onValueChange={handleEpisodeChange}>
-                  <SelectTrigger className="h-10 w-[124px] rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80 focus:ring-primary/50">
-                    <SelectValue placeholder="Episode" />
-                  </SelectTrigger>
-                  <SelectContent className="glass-strong border-white/10 text-white">
-                    {Array.from({ length: episodeCount }).map((_, i) => (
-                      <SelectItem key={i + 1} value={String(i + 1)}>
-                        Episode {i + 1}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <Link
-              to="/"
-              aria-label="Home"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.05] text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <Home size={19} />
-            </Link>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Full-size player */}
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.45, ease: easeOutExpo }}
-        className="w-full"
-      >
-        <div className="relative h-[calc(100dvh-4rem)] min-h-[320px] w-full overflow-hidden bg-black">
-          <StreamPlayer
-            id={itemId}
-            imdbId={movieItem ? movieItem.imdb_id : tvItem?.external_ids?.imdb_id}
-            type={type as 'movie' | 'tv' | 'anime'}
-            season={season}
-            episode={episode}
-            title={title}
-            fill
-          />
-        </div>
-
-        {/* Meta */}
-        <div className="w-full border-t border-white/[0.06] bg-gradient-to-b from-black via-background to-background px-4 py-6 md:px-8 md:py-8">
-          <div className="mx-auto w-full max-w-5xl">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <span className="brand-gradient flex h-10 w-10 items-center justify-center rounded-xl text-white">
-                  <Play size={17} fill="currentColor" className="ml-0.5" />
-                </span>
-                <div>
-                  <h2 className="font-display text-xl font-bold text-white md:text-2xl">
-                    {title}
-                  </h2>
-                  <p className="text-xs text-white/40">
-                    {year}
-                    {movieItem?.runtime
-                      ? ` • ${Math.floor(movieItem.runtime / 60)}h ${movieItem.runtime % 60}m`
-                      : ''}
-                  </p>
-                </div>
-              </div>
-
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
-                {type}
-              </span>
-            </div>
-
-            {/* Mobile selectors */}
-            {!isMovie && tvItem && (
-              <div className="mt-4 flex items-center gap-2 md:hidden">
-                <Select value={String(season)} onValueChange={handleSeasonChange}>
-                  <SelectTrigger className="h-10 flex-1 rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80">
-                    <SelectValue placeholder="Season" />
-                  </SelectTrigger>
-                  <SelectContent className="glass-strong border-white/10 text-white">
-                    {tvItem.seasons
-                      ?.filter((s) => s.season_number > 0)
-                      .map((s) => (
-                        <SelectItem key={s.id} value={String(s.season_number)}>
-                          S{s.season_number}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={String(episode)} onValueChange={handleEpisodeChange}>
-                  <SelectTrigger className="h-10 flex-1 rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80">
-                    <SelectValue placeholder="Episode" />
-                  </SelectTrigger>
-                  <SelectContent className="glass-strong border-white/10 text-white">
-                    {Array.from({ length: episodeCount }).map((_, i) => (
-                      <SelectItem key={i + 1} value={String(i + 1)}>
-                        E{i + 1}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <div className="my-5 h-px w-full bg-white/[0.06]" />
-
-            <p className="max-w-4xl text-sm leading-relaxed text-white/60">
-              {item.overview}
-            </p>
-          </div>
-        </div>
-      </motion.main>
+      {/* Full-viewport player */}
+      <StreamPlayer
+        id={itemId}
+        imdbId={movieItem ? movieItem.imdb_id : tvItem?.external_ids?.imdb_id}
+        type={type as 'movie' | 'tv' | 'anime'}
+        season={season}
+        episode={episode}
+        title={title}
+        preferredSourceId={searchParams.get('source')}
+        fill
+      />
     </div>
   );
 };

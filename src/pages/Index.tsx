@@ -66,7 +66,7 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero — bleeds under the left rail */}
-      <div className="md:-ml-[84px]">
+      <div className="md:-ml-24">
         {trendingLoading ? (
           <HeroSkeleton />
         ) : heroItems.length > 0 ? (

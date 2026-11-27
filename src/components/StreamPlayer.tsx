@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { resolveStreamSource, StreamSourceOptions } from '@/constants/sources';
+import { resolveStreamSource, STREAM_SOURCES, StreamSourceOptions } from '@/constants/sources';
 
 interface StreamPlayerProps {
   id: number;
@@ -9,6 +9,7 @@ interface StreamPlayerProps {
   season?: number;
   episode?: number;
   title: string;
+  preferredSourceId?: string | null;
   /** Stretch the player to fill its parent instead of using a 16:9 box. */
   fill?: boolean;
   className?: string;
@@ -21,6 +22,7 @@ const StreamPlayer = ({
   season = 1,
   episode = 1,
   title,
+  preferredSourceId,
   fill = false,
   className,
 }: StreamPlayerProps) => {
@@ -37,17 +39,26 @@ const StreamPlayer = ({
     setStreamUrl(null);
     setSourceName(null);
 
-    resolveStreamSource(options, controller.signal).then((source) => {
-      if (cancelled || controller.signal.aborted) return;
-      setSourceName(source.name);
-      setStreamUrl(source.buildUrl(options));
-    });
+    const preferred = preferredSourceId
+      ? STREAM_SOURCES.find((s) => s.id === preferredSourceId)
+      : undefined;
+
+    if (preferred) {
+      setSourceName(preferred.name);
+      setStreamUrl(preferred.buildUrl(options));
+    } else {
+      resolveStreamSource(options, controller.signal).then((source) => {
+        if (cancelled || controller.signal.aborted) return;
+        setSourceName(source.name);
+        setStreamUrl(source.buildUrl(options));
+      });
+    }
 
     return () => {
       cancelled = true;
       controller.abort();
     };
-  }, [id, imdbId, type, season, episode]);
+  }, [id, imdbId, type, season, episode, preferredSourceId]);
 
   return (
     <div

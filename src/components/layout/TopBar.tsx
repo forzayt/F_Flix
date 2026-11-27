@@ -1,104 +1,139 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Search, Sparkles } from 'lucide-react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Search, User, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TopBar = () => {
-  const [value, setValue] = useState('');
-  const [focused, setFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isSearchPage = location.pathname === '/search';
+  const urlQuery = isSearchPage ? searchParams.get('q') || '' : '';
+
+  const [value, setValue] = useState(urlQuery);
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (location.pathname === '/search') {
-      setValue(searchParams.get('q') || '');
+    if (isSearchPage) {
+      setValue(urlQuery);
+      inputRef.current?.focus();
+    } else {
+      setValue('');
     }
-  }, [location.pathname, searchParams]);
+  }, [isSearchPage, urlQuery]);
+
+  // Live-update search query param when typing on /search
+  useEffect(() => {
+    if (!isSearchPage) return;
+    const trimmed = value.trim();
+    if (trimmed === urlQuery) return;
+    const timer = setTimeout(() => {
+      setSearchParams(trimmed ? { q: trimmed } : {}, { replace: true });
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [value, isSearchPage, urlQuery, setSearchParams]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
-        inputRef.current?.focus();
+        if (!isSearchPage) {
+          navigate('/search');
+        } else {
+          inputRef.current?.focus();
+        }
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [isSearchPage, navigate]);
+
+  const handleBarClick = () => {
+    if (!isSearchPage) {
+      navigate('/search');
+    }
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const query = value.trim();
     navigate(query ? `/search?q=${encodeURIComponent(query)}` : '/search');
-    inputRef.current?.blur();
+  };
+
+  const handleClear = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setValue('');
+    if (isSearchPage) {
+      setSearchParams({}, { replace: true });
+      inputRef.current?.focus();
+    }
   };
 
   return (
-    <div className="fixed inset-x-0 top-0 z-40 md:left-[84px]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/75 via-black/25 to-transparent" />
+    <div
+      className="fixed inset-x-0 top-0 z-40 md:left-24"
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+    >
+      {/* Top-bar row: search centered, profile on right */}
+      <div className="flex h-[5.5rem] items-center justify-between px-4">
+        {/* Spacer for balance */}
+        <div className="hidden w-14 md:block" />
 
-      <div className="relative flex items-center justify-center px-4 pb-3 pt-4 md:px-8 md:pt-5">
-        <motion.form
+        {/* ── Stremio-style search bar ── */}
+        <form
           onSubmit={handleSubmit}
-          animate={{ scale: focused ? 1.015 : 1 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+          onClick={handleBarClick}
           className={cn(
-            'group relative flex w-full max-w-xl items-center gap-3 rounded-2xl border px-4 py-2.5 backdrop-blur-xl transition-colors duration-300',
-            focused
-              ? 'border-primary/50 bg-black/55 shadow-[0_0_0_1px_hsl(var(--primary)/0.25),0_18px_50px_-24px_hsl(var(--brand-glow)/0.8)]'
-              : 'border-white/10 bg-black/35 hover:border-white/20'
+            'relative flex h-[3.25rem] w-full max-w-[30rem] items-center rounded-full transition-colors duration-200',
+            focused || isSearchPage
+              ? 'bg-white/[0.08]'
+              : 'cursor-pointer bg-white/[0.05] hover:bg-white/[0.07]',
           )}
         >
-          <Search
-            size={18}
-            className={cn(
-              'shrink-0 transition-colors',
-              focused ? 'text-primary' : 'text-white/50'
-            )}
-          />
           <input
             ref={inputRef}
             type="text"
             value={value}
-            onChange={(event) => setValue(event.target.value)}
+            readOnly={!isSearchPage}
+            onChange={(e) => setValue(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="Search movies, TV shows, anime..."
+            placeholder="Search or paste a link"
             aria-label="Search"
-            className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+            className={cn(
+              'h-full flex-1 bg-transparent pl-8 pr-2 text-sm font-medium text-white/90 placeholder:text-white/[0.6] focus:outline-none',
+              !isSearchPage && 'cursor-pointer',
+            )}
           />
-          <kbd className="hidden rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-white/40 sm:block">
-            Ctrl K
-          </kbd>
-          <button
-            type="submit"
-            aria-label="Search"
-            className="brand-gradient flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white opacity-90 transition-opacity hover:opacity-100"
-          >
-            <Search size={15} />
-          </button>
-        </motion.form>
+          {value.length > 0 ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              aria-label="Clear search"
+              className="flex h-full items-center justify-center px-5 text-white/60 transition-colors hover:text-white"
+            >
+              <X size={18} strokeWidth={1.8} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              aria-label="Search"
+              className="flex h-full items-center justify-center px-5"
+            >
+              <Search size={18} strokeWidth={1.8} className="text-white/60" />
+            </button>
+          )}
+        </form>
 
-        <div className="absolute right-4 hidden items-center gap-3 md:right-8 md:flex">
-          <Link
-            to="/anime"
-            aria-label="Anime"
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-black/35 text-white/60 backdrop-blur-xl transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <Sparkles size={17} />
-          </Link>
-          <Link
-            to="/"
-            aria-label="Profile"
-            className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] text-sm font-semibold text-white backdrop-blur-xl"
-          >
-            FF
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-black" />
-          </Link>
-        </div>
+        {/* ── Profile button (Stremio NavMenu trigger style) ── */}
+        <button
+          type="button"
+          aria-label="Profile"
+          className="flex h-14 w-14 items-center justify-center rounded-xl opacity-60 transition-opacity hover:bg-white/[0.05] hover:opacity-100"
+        >
+          <User size={22} strokeWidth={1.7} className="text-white/60" />
+        </button>
       </div>
     </div>
   );

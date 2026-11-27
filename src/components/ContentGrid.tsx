@@ -33,10 +33,10 @@ const ContentGrid = ({ items, type, isLoading }: ContentGridProps) => {
       variants={staggerContainer}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-6 lg:grid-cols-5 xl:grid-cols-6"
+      className="grid grid-cols-[repeat(auto-fill,120px)] justify-between gap-4 sm:grid-cols-[repeat(auto-fill,135px)] md:grid-cols-[repeat(auto-fill,145px)] md:gap-5"
     >
       {items.map((item) => (
-        <MovieCard key={item.id} item={item} type={type} className="w-full" />
+        <MovieCard key={item.id} item={item} type={type} />
       ))}
     </motion.div>
   );

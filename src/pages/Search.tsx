@@ -1,42 +1,28 @@
-import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search as SearchIcon, SearchX } from 'lucide-react';
+import { Clapperboard, Film, SearchX, Sparkles, Tv } from 'lucide-react';
 import { searchMulti, Movie, TVShow } from '@/services/tmdb';
 import MovieCard from '@/components/MovieCard';
 import { ContentGridSkeleton } from '@/components/ContentSkeletons';
-import PageHeader from '@/components/layout/PageHeader';
 import { staggerContainer } from '@/lib/motion';
 
+const searchHints = [
+  { icon: Film, label: 'Movies & Trailers' },
+  { icon: Tv, label: 'TV Series & Episodes' },
+  { icon: Sparkles, label: 'Anime & Animation' },
+  { icon: Clapperboard, label: 'Actors & Genres' },
+];
+
 const Search = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  const [inputValue, setInputValue] = useState(query);
 
   const { data, isLoading } = useQuery({
     queryKey: ['search', query],
     queryFn: () => searchMulti(query),
     enabled: query.length > 0,
   });
-
-  useEffect(() => {
-    setInputValue(query);
-  }, [query]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (inputValue.trim() !== query) {
-        setSearchParams({ q: inputValue.trim() }, { replace: true });
-      }
-    }, 450);
-
-    return () => clearTimeout(timer);
-  }, [inputValue, query, setSearchParams]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
 
   const getMediaType = (item: Movie | TVShow): 'movie' | 'tv' => {
     if ('media_type' in item) {
@@ -53,31 +39,40 @@ const Search = () => {
     ) || [];
 
   return (
-    <main className="px-4 pb-24 pt-28 md:px-12 md:pt-32">
-      <PageHeader
-        eyebrow="Discover"
-        title="Search"
-        description="Find movies, TV series and anime across the entire catalogue."
-      />
+    <div className="min-h-screen px-4 pb-24 pt-[6.5rem] md:px-10 md:pt-[6.5rem]">
+      {!query ? (
+        /* ── Stremio-style Search Hints empty state ── */
+        <div className="flex min-h-[calc(100vh-10rem)] flex-col items-center justify-center">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 0.4, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="text-center text-2xl font-normal text-white"
+          >
+            Search anything...
+          </motion.p>
 
-      <form onSubmit={handleSearch} className="mb-10 max-w-2xl">
-        <div className="group relative">
-          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/40 transition-colors group-focus-within:text-primary" size={20} />
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Search movies, TV shows, anime..."
-            aria-label="Search catalogue"
-            className="glass w-full rounded-2xl py-4 pl-12 pr-4 text-base text-white placeholder:text-white/35 focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/40"
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.08 }}
+            className="mt-14 grid w-full max-w-3xl grid-cols-2 gap-10 px-4 sm:grid-cols-4"
+          >
+            {searchHints.map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center justify-center text-center opacity-40"
+              >
+                <Icon className="mb-5 h-14 w-14 text-white" strokeWidth={1.35} />
+                <span className="text-base font-normal text-white">{label}</span>
+              </div>
+            ))}
+          </motion.div>
         </div>
-      </form>
-
-      {query ? (
+      ) : (
         <>
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-white md:text-xl">
+            <h2 className="font-display text-xl font-medium text-white/90 md:text-2xl">
               {isLoading ? 'Searching…' : `Results for “${query}”`}
             </h2>
             {!isLoading && (
@@ -94,41 +89,28 @@ const Search = () => {
               variants={staggerContainer}
               initial="hidden"
               animate="show"
-              className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-6 lg:grid-cols-5 xl:grid-cols-6"
+              className="grid grid-cols-[repeat(auto-fill,120px)] justify-between gap-4 sm:grid-cols-[repeat(auto-fill,135px)] md:grid-cols-[repeat(auto-fill,145px)] md:gap-5"
             >
               {filteredResults.map((item) => (
                 <MovieCard
                   key={item.id}
                   item={item}
                   type={getMediaType(item)}
-                  className="w-full"
                 />
               ))}
             </motion.div>
           ) : (
-            <div className="glass flex flex-col items-center justify-center gap-3 rounded-3xl px-6 py-20 text-center">
-              <div className="brand-gradient-soft flex h-14 w-14 items-center justify-center rounded-2xl text-primary">
-                <SearchX size={24} />
-              </div>
-              <p className="text-lg font-medium text-white/80">
+            <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-center opacity-60">
+              <SearchX size={48} strokeWidth={1.4} className="text-white" />
+              <p className="text-xl font-medium text-white">
                 No results for “{query}”
               </p>
-              <p className="text-sm text-white/40">Try a different title or keyword.</p>
+              <p className="text-sm text-white/60">Try a different title or keyword.</p>
             </div>
           )}
         </>
-      ) : (
-        <div className="glass flex flex-col items-center justify-center gap-3 rounded-3xl px-6 py-20 text-center">
-          <div className="brand-gradient-soft flex h-14 w-14 items-center justify-center rounded-2xl text-primary">
-            <SearchIcon size={24} />
-          </div>
-          <p className="text-lg font-medium text-white/80">Start typing to search</p>
-          <p className="text-sm text-white/40">
-            Press <kbd className="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px]">Ctrl K</kbd> anywhere to focus search.
-          </p>
-        </div>
       )}
-    </main>
+    </div>
   );
 };
 

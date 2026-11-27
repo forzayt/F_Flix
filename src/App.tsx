@@ -14,6 +14,8 @@ import TVDetails from "./pages/TVDetails";
 import Player from "./pages/Player";
 import Live from "./pages/Live";
 import NotFound from "./pages/NotFound";
+import Intro from "./pages/Intro";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -23,8 +25,12 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
+        <Routes>
+          {/* Intro page — no sidebar / topbar / mobile nav */}
+          <Route path="/intro" element={<Intro />} />
+
+          {/* All other pages wrapped in AppLayout */}
+          <Route element={<AppLayout />}>
             <Route path="/" element={<Index />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/tv-series" element={<TVSeries />} />
@@ -34,9 +40,10 @@ const App = () => (
             <Route path="/tv/:id" element={<TVDetails />} />
             <Route path="/watch/:type/:id" element={<Player />} />
             <Route path="/Live" element={<Live />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+          </Route>
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

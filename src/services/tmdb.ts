@@ -209,6 +209,28 @@ export const searchMovies = (query: string, page = 1) =>
 export const searchTVShows = (query: string, page = 1) =>
   fetchTMDB<PaginatedResponse<TVShow>>('/search/tv', { query, page: String(page) });
 
+export interface Episode {
+  id: number;
+  name: string;
+  overview: string;
+  episode_number: number;
+  season_number: number;
+  still_path: string | null;
+  air_date: string;
+  runtime: number | null;
+  vote_average: number;
+}
+
+export interface SeasonDetails {
+  id: number;
+  name: string;
+  season_number: number;
+  episodes: Episode[];
+}
+
+export const getTVSeasonDetails = (id: number, seasonNumber: number) =>
+  fetchTMDB<SeasonDetails>(`/tv/${id}/season/${seasonNumber}`);
+
 // Genres
 export const getMovieGenres = () =>
   fetchTMDB<{ genres: Genre[] }>('/genre/movie/list');

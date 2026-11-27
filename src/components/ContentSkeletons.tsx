@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 const gridClass =
-  'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6';
+  'grid grid-cols-[repeat(auto-fill,120px)] justify-between gap-4 sm:grid-cols-[repeat(auto-fill,135px)] md:grid-cols-[repeat(auto-fill,145px)] md:gap-5';
 
 interface SkeletonProps {
   className?: string;
@@ -10,8 +10,8 @@ interface SkeletonProps {
 
 /** A single poster card placeholder that matches MovieCard's layout. */
 export const PosterCardSkeleton = ({ className }: SkeletonProps) => (
-  <div className={cn('w-full space-y-3', className)}>
-    <Skeleton className="aspect-[2/3] w-full rounded-2xl" />
+  <div className={cn('w-[120px] space-y-3 sm:w-[135px] md:w-[145px]', className)}>
+    <Skeleton className="aspect-[2/3] w-full rounded-xl" />
     <Skeleton className="h-4 w-3/4 rounded-md" />
     <Skeleton className="h-3 w-1/2 rounded-md" />
   </div>
@@ -40,9 +40,9 @@ export const MovieRowSkeleton = ({ cards = 7 }: { cards?: number }) => (
       {Array.from({ length: cards }).map((_, i) => (
         <div
           key={i}
-          className="w-[125px] flex-shrink-0 space-y-3 md:w-[165px]"
+          className="w-[120px] flex-shrink-0 space-y-3 sm:w-[135px] md:w-[145px]"
         >
-          <Skeleton className="aspect-[2/3] w-full rounded-2xl" />
+          <Skeleton className="aspect-[2/3] w-full rounded-xl" />
           <Skeleton className="h-4 w-3/4 rounded-md" />
           <Skeleton className="h-3 w-1/2 rounded-md" />
         </div>

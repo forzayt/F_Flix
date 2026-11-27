@@ -79,14 +79,13 @@ const MovieRow = ({ title, items, type, className, seeAllTo }: MovieRowProps) =>
         <DraggableCarousel
           setApi={setApi}
           className="px-4 py-3 md:px-12"
-          slideClassName="max-w-[150px] md:max-w-[185px]"
+          slideClassName="w-[120px] sm:w-[135px] md:w-[145px]"
         >
           {items.map((item) => (
             <MovieCard
               key={item.id}
               item={item}
               type={type}
-              className="w-[125px] md:w-[165px]"
             />
           ))}
         </DraggableCarousel>

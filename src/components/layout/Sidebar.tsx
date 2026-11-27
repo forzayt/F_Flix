@@ -1,91 +1,102 @@
 import { NavLink } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   Clapperboard,
+  Github,
   Home,
-  Play,
-  Radio,
-  Search,
   Sparkles,
   Tv,
-  UserRound,
+  Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const navItems = [
+const navTabs = [
   { to: '/', label: 'Home', icon: Home, end: true },
   { to: '/movies', label: 'Movies', icon: Clapperboard },
   { to: '/tv-series', label: 'TV Series', icon: Tv },
   { to: '/anime', label: 'Anime', icon: Sparkles },
-  { to: '/Live', label: 'Live TV', icon: Radio },
-  { to: '/search', label: 'Search', icon: Search },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const Sidebar = () => {
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[84px] flex-col items-center justify-between border-r border-white/[0.06] bg-[hsl(240_24%_5%/0.72)] py-5 backdrop-blur-2xl md:flex">
-      {/* Logo */}
-      <NavLink to="/" aria-label="Forza Flix home" className="group relative">
-        <motion.span
-          whileHover={{ scale: 1.08, rotate: -4 }}
-          whileTap={{ scale: 0.94 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-          className="brand-gradient glow-primary flex h-11 w-11 items-center justify-center rounded-2xl text-white"
-        >
-          <Play size={20} fill="currentColor" className="ml-0.5" />
-        </motion.span>
-        <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-xl border border-white/10 bg-black/80 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-xl backdrop-blur-xl transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
-          Forza Flix
-        </span>
+    <aside className="fixed inset-y-0 left-0 z-50 hidden w-24 flex-col items-center bg-transparent md:flex">
+      {/* ── Stremio-style logo area ── */}
+      <NavLink
+        to="/"
+        aria-label="Forza Flix home"
+        className="flex h-[5.5rem] w-full items-center justify-center"
+      >
+        <img
+          src="/favicon.png"
+          alt="Forza Flix"
+          className="h-10 w-10 object-contain opacity-90"
+        />
       </NavLink>
 
-      {/* Navigation */}
-      <nav className="flex flex-1 flex-col items-center justify-center gap-2">
-        {navItems.map(({ to, label, icon: Icon, end }) => (
-          <NavLink key={to} to={to} end={end} aria-label={label} className="group relative">
+      {/* ── Tab buttons (Stremio VerticalNavBar style) ── */}
+      <nav className="flex flex-1 flex-col items-center gap-2 overflow-y-auto py-2 scrollbar-hide">
+        {navTabs.map(({ to, label, icon: Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            title={label}
+            className="group"
+          >
             {({ isActive }) => (
-              <>
-                {isActive && (
-                  <motion.span
-                    layoutId="rail-active"
-                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                    className="brand-gradient absolute inset-0 rounded-2xl opacity-90 shadow-[0_10px_30px_-10px_hsl(var(--brand-glow)/0.8)]"
-                  />
+              <div
+                className={cn(
+                  'flex h-[4.2rem] w-[4.2rem] flex-col items-center justify-center rounded-xl transition-colors duration-150',
+                  isActive
+                    ? 'bg-white/[0.05]'
+                    : 'hover:bg-white/[0.05]',
                 )}
-                <motion.span
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
+              >
+                <Icon
+                  size={22}
+                  strokeWidth={1.7}
                   className={cn(
-                    'relative flex h-12 w-12 items-center justify-center rounded-2xl transition-colors duration-200',
+                    'mb-1 transition-colors duration-150',
                     isActive
-                      ? 'text-white'
-                      : 'text-white/55 hover:bg-white/[0.06] hover:text-white'
+                      ? 'text-[hsl(258,80%,60%)]'
+                      : 'text-white/[0.35] group-hover:text-white/60',
+                  )}
+                />
+                <span
+                  className={cn(
+                    'max-w-full truncate px-1 text-[0.65rem] font-medium leading-tight transition-all duration-150',
+                    isActive
+                      ? 'text-[hsl(258,80%,60%)]'
+                      : 'text-white/0 group-hover:text-white/60',
                   )}
                 >
-                  <Icon size={21} strokeWidth={1.9} />
-                </motion.span>
-                <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 translate-x-1 whitespace-nowrap rounded-xl border border-white/10 bg-black/80 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-xl backdrop-blur-xl transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
                   {label}
                 </span>
-              </>
+              </div>
             )}
           </NavLink>
         ))}
-      </nav>
 
-      {/* Profile */}
-      <motion.button
-        whileHover={{ scale: 1.06 }}
-        whileTap={{ scale: 0.94 }}
-        aria-label="Profile"
-        className="group relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white/70 transition-colors hover:bg-white/[0.1] hover:text-white"
-      >
-        <UserRound size={19} />
-        <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[hsl(240_24%_5%)]" />
-        <span className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl border border-white/10 bg-black/80 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-xl backdrop-blur-xl transition-all duration-200 group-hover:opacity-100">
-          Profile
-        </span>
-      </motion.button>
+        {/* ── GitHub external link (last in order) ── */}
+        <a
+          href="https://github.com/forzayt/F_Flix"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="GitHub"
+          className="group"
+        >
+          <div className="flex h-[4.2rem] w-[4.2rem] flex-col items-center justify-center rounded-xl transition-colors duration-150 hover:bg-white/[0.05]">
+            <Github
+              size={22}
+              strokeWidth={1.7}
+              className="mb-1 text-white/[0.35] transition-colors duration-150 group-hover:text-white/60"
+            />
+            <span className="max-w-full truncate px-1 text-[0.65rem] font-medium leading-tight text-white/0 transition-all duration-150 group-hover:text-white/60">
+              GitHub
+            </span>
+          </div>
+        </a>
+      </nav>
     </aside>
   );
 };

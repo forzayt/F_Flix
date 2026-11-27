@@ -28,7 +28,7 @@ const itemVariants = {
 
 const HeroSection = ({ items }: HeroSectionProps) => {
   const autoplayRef = useRef(
-    Autoplay({ delay: 7000, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 7000, stopOnInteraction: false, stopOnMouseEnter: false })
   );
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' }, [
     autoplayRef.current,
@@ -44,11 +44,24 @@ const HeroSection = ({ items }: HeroSectionProps) => {
   useEffect(() => {
     if (!emblaApi) return;
     onSelect();
+
+    const onAutoplayPlay = () => setIsPlaying(true);
+    const onAutoplayStop = () => setIsPlaying(false);
+
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
+    emblaApi.on('autoplay:play', onAutoplayPlay);
+    emblaApi.on('autoplay:stop', onAutoplayStop);
+
+    if (!autoplayRef.current.isPlaying()) {
+      autoplayRef.current.play();
+    }
+
     return () => {
       emblaApi.off('select', onSelect);
       emblaApi.off('reInit', onSelect);
+      emblaApi.off('autoplay:play', onAutoplayPlay);
+      emblaApi.off('autoplay:stop', onAutoplayStop);
     };
   }, [emblaApi, onSelect]);
 

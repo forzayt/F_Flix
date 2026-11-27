@@ -22,13 +22,13 @@ const MovieCard = ({ item, type, className }: MovieCardProps) => {
       whileHover={{ y: -8, scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-      className={cn('group/card relative w-[150px] shrink-0', className)}
+      className={cn('group/card relative w-[120px] shrink-0 sm:w-[135px] md:w-[145px]', className)}
     >
       <Link
         to={`/${type}/${item.id}`}
-        className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-secondary shadow-[0_18px_45px_-25px_rgba(0,0,0,0.95)]">
+        <div className="relative aspect-[2/3] overflow-hidden rounded-xl border border-white/10 bg-secondary shadow-[0_18px_45px_-25px_rgba(0,0,0,0.95)]">
           <img
             src={getImageUrl(item.poster_path, 'w500')}
             alt={title}
@@ -50,11 +50,6 @@ const MovieCard = ({ item, type, className }: MovieCardProps) => {
           <div className="absolute right-2 top-2 flex items-center gap-1 rounded-lg border border-white/10 bg-black/55 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
             <Star size={11} className="fill-amber-400 text-amber-400" />
             {item.vote_average.toFixed(1)}
-          </div>
-
-          {/* Progress hint */}
-          <div className="absolute inset-x-0 bottom-0 h-1 bg-white/10">
-            <span className="brand-gradient block h-full w-0 transition-all duration-500 group-hover/card:w-1/3" />
           </div>
         </div>
 
