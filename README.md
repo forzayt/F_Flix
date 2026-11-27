@@ -66,8 +66,14 @@ F-Flix includes a lightweight desktop wrapper in [`electron/main.cjs`](electron/
 - **Security & Native UX:**
   - Strict renderer isolation (`nodeIntegration: false`, `contextIsolation: true`, `sandbox: true`).
   - Single-instance lock (`app.requestSingleInstanceLock()`) to prevent duplicate windows.
-  - External links (outside the active app hostname) are intercepted and opened in the user's default OS browser.
+  - External links are intercepted: only trusted links (e.g. the GitHub repo) open in the user's default OS browser; ad popups are denied.
+  - Top-level navigation is pinned to the configured app origin so an ad frame cannot redirect the window.
   - Custom app icon (`electron/icon.ico` / `electron/icon.png`) and hidden menu bar for a clean native feel.
+- **Network-Level Ad Blocking (`electron/adblock.cjs`):**
+  - Blocks requests at the Chromium session layer, which also covers third-party stream iframes (something the web app cannot do because of the same-origin policy).
+  - Uses the full **EasyList + EasyPrivacy** engine from `@ghostery/adblocker-electron` when installed, cached on disk for fast startup.
+  - Falls back to a built-in ad/popunder/tracker blocklist if the optional engine is not installed or offline.
+  - Denies notification, geolocation, camera and microphone permission prompts from ad frames while still allowing fullscreen playback.
 
 ---
 
@@ -77,6 +83,7 @@ F-Flix includes a lightweight desktop wrapper in [`electron/main.cjs`](electron/
 F_Flix/
 ├── electron/
 │   ├── main.cjs          # Electron main process & dynamic URL loader
+│   ├── adblock.cjs       # Network-level ad blocker (EasyList + fallback list)
 │   ├── icon.ico          # Windows application icon
 │   └── icon.png          # PNG icon asset
 ├── public/
@@ -106,7 +113,9 @@ F_Flix/
 ### Installation
 ```bash
 npm install
+npm --prefix electron install
 ```
+> The second command installs the Electron-side ad-blocking engine (`electron/package.json`). The app still runs without it, but only with the smaller built-in blocklist.
 
 ### Running the Web App (Development)
 ```bash

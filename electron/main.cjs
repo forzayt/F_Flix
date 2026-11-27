@@ -1,7 +1,31 @@
 const { app, BrowserWindow, shell, Menu, net } = require('electron');
 const path = require('path');
+const { setupAdblock } = require('./adblock.cjs');
 
 const CONFIG_URL = 'https://forzayt.github.io/F_Flix/src/config/url.json';
+
+/** Links that are allowed to open in the user's real browser. */
+const EXTERNAL_ALLOWLIST = new Set(['github.com', 'www.github.com']);
+
+function isTrustedExternal(url) {
+  try {
+    const { protocol, hostname } = new URL(url);
+    return (
+      protocol === 'https:' &&
+      (EXTERNAL_ALLOWLIST.has(hostname) || hostname.endsWith('.github.com'))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isSameOrigin(url, originUrl) {
+  try {
+    return new URL(url).origin === new URL(originUrl).origin;
+  } catch {
+    return false;
+  }
+}
 
 async function fetchTargetUrl() {
   const fetchFn = net?.fetch || fetch;
@@ -17,18 +41,34 @@ function loadErrorPage(window, errorMessage) {
   window.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(errorHtml)}`);
 }
 
+/**
+ * Lock the window down so ad frames cannot spawn popups, redirect the main
+ * window, or ask for notifications/geolocation. This complements the network
+ * blocker in adblock.cjs.
+ */
+function hardenWindow(mainWindow, targetUrl) {
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    // Only the handful of real external links open in the OS browser.
+    if (isTrustedExternal(url)) shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (!isSameOrigin(url, targetUrl)) event.preventDefault();
+  });
+
+  mainWindow.webContents.on(
+    'will-redirect',
+    (event, url, _isInPlace, isMainFrame) => {
+      if (isMainFrame && !isSameOrigin(url, targetUrl)) event.preventDefault();
+    }
+  );
+}
+
 async function loadApp(mainWindow) {
   try {
     const targetUrl = await fetchTargetUrl();
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-      try {
-        if (new URL(url).hostname === new URL(targetUrl).hostname) return { action: 'allow' };
-      } catch {
-        if (url.startsWith(targetUrl)) return { action: 'allow' };
-      }
-      shell.openExternal(url);
-      return { action: 'deny' };
-    });
+    hardenWindow(mainWindow, targetUrl);
     mainWindow.loadURL(targetUrl);
   } catch (error) {
     loadErrorPage(mainWindow, error.message);
@@ -60,6 +100,11 @@ if (!gotTheLock) {
     }
   });
   app.whenReady().then(() => {
+    // Kick off ad blocking before the first page load. The built-in blocklist
+    // is installed synchronously; the EasyList engine attaches when ready.
+    void setupAdblock().catch((error) => {
+      console.warn('[adblock] Setup failed:', error?.message || error);
+    });
     createWindow();
     app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
   });

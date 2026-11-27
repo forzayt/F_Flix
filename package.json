@@ -12,8 +12,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "electron:install": "npm --prefix electron install",
     "electron": "electron .",
-    "build:win": "electron-builder --win"
+    "build:win": "npm --prefix electron install && electron-builder --win"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
