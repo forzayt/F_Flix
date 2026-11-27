@@ -65,7 +65,7 @@ const HLSPlayer: React.FC<HLSPlayerProps> = ({ url, autoPlay = true, className =
   }, [url, autoPlay]);
 
   return (
-    <div className={`relative aspect-video bg-black rounded-lg overflow-hidden ${className}`}>
+    <div className={`relative aspect-video w-full overflow-hidden rounded-2xl bg-black ${className}`}>
       <video
         ref={videoRef}
         controls

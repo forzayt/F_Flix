@@ -1,13 +1,25 @@
+import { useEffect } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, Home, ChevronRight } from 'lucide-react';
-import { useEffect } from 'react';
-import { getMovieDetails, getTVShowDetails, MovieDetails, TVShowDetails } from '@/services/tmdb';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, Home, Play } from 'lucide-react';
+import {
+  getMovieDetails,
+  getTVShowDetails,
+  MovieDetails,
+  TVShowDetails,
+} from '@/services/tmdb';
 import StreamPlayer from '@/components/StreamPlayer';
-import { Button } from '@/components/ui/button';
 import { PlayerSkeleton } from '@/components/ContentSkeletons';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { saveToContinueWatching } from '@/lib/continueWatching';
+import { easeOutExpo } from '@/lib/motion';
 
 const Player = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -22,16 +34,14 @@ const Player = () => {
     queryKey: [type, itemId],
     queryFn: async () => {
       if (type === 'movie') return getMovieDetails(itemId);
-      // For anime and tv, we try tv details first. 
-      // If it's an anime movie, this might need refinement, but usually anime in TMDB are either movie or tv.
       return getTVShowDetails(itemId);
     },
     enabled: !!itemId && (type === 'movie' || type === 'tv' || type === 'anime'),
   });
 
   const isMovie = type === 'movie';
-  const movieItem = isMovie ? item as MovieDetails : null;
-  const tvItem = !isMovie ? item as TVShowDetails : null;
+  const movieItem = isMovie ? (item as MovieDetails) : null;
+  const tvItem = !isMovie ? (item as TVShowDetails) : null;
 
   useEffect(() => {
     if (item) {
@@ -54,9 +64,19 @@ const Player = () => {
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Content not found</h1>
-        <Button onClick={() => navigate(-1)}>Go Back</Button>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
+        <div className="glass rounded-3xl px-8 py-10 text-center">
+          <h1 className="text-2xl font-bold text-white">Content not found</h1>
+          <p className="mt-2 text-sm text-white/45">
+            This title is unavailable or the link is invalid.
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="brand-gradient mt-6 inline-flex h-11 items-center gap-2 rounded-2xl px-5 text-sm font-semibold text-white"
+          >
+            <ChevronLeft size={16} /> Go back
+          </button>
+        </div>
       </div>
     );
   }
@@ -73,54 +93,64 @@ const Player = () => {
     setSearchParams({ s: String(season), e });
   };
 
+  const episodeCount =
+    tvItem?.seasons?.find((s) => s.season_number === season)?.episode_count || 0;
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation Header */}
-      <div className="p-4 md:px-8 flex items-center justify-between bg-gradient-to-b from-background to-transparent border-b border-white/5">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
+    <div className="min-h-screen px-4 pb-16 pt-5 md:px-8 md:pt-7">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: easeOutExpo }}
+        className="glass mx-auto mb-6 flex max-w-6xl items-center justify-between gap-4 rounded-2xl px-4 py-3"
+      >
+        <div className="flex min-w-0 items-center gap-3">
+          <button
             onClick={() => navigate(-1)}
-            className="rounded-full hover:bg-secondary focus:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Go back"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           >
-            <ChevronLeft size={24} />
-          </Button>
-          <div className="flex flex-col">
-            <h1 className="text-lg md:text-xl font-bold line-clamp-1">{title}</h1>
+            <ChevronLeft size={20} />
+          </button>
+          <div className="min-w-0">
+            <h1 className="line-clamp-1 font-display text-base font-semibold text-white md:text-lg">
+              {title}
+            </h1>
             {!isMovie && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <p className="flex items-center gap-1 text-xs text-white/45">
                 <span>Season {season}</span>
-                <ChevronRight size={12} />
+                <ChevronRight size={11} />
                 <span>Episode {episode}</span>
               </p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 md:gap-4">
+
+        <div className="flex shrink-0 items-center gap-2 md:gap-3">
           {!isMovie && tvItem && (
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden items-center gap-2 md:flex">
               <Select value={String(season)} onValueChange={handleSeasonChange}>
-                <SelectTrigger className="w-[120px] bg-secondary/50 border-none focus:ring-2 focus:ring-primary">
+                <SelectTrigger className="h-10 w-[120px] rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80 focus:ring-primary/50">
                   <SelectValue placeholder="Season" />
                 </SelectTrigger>
-                <SelectContent>
-                  {tvItem.seasons?.filter(s => s.season_number > 0).map((s) => (
-                    <SelectItem key={s.id} value={String(s.season_number)}>
-                      Season {s.season_number}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="glass-strong border-white/10 text-white">
+                  {tvItem.seasons
+                    ?.filter((s) => s.season_number > 0)
+                    .map((s) => (
+                      <SelectItem key={s.id} value={String(s.season_number)}>
+                        Season {s.season_number}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
 
               <Select value={String(episode)} onValueChange={handleEpisodeChange}>
-                <SelectTrigger className="w-[120px] bg-secondary/50 border-none focus:ring-2 focus:ring-primary">
+                <SelectTrigger className="h-10 w-[120px] rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80 focus:ring-primary/50">
                   <SelectValue placeholder="Episode" />
                 </SelectTrigger>
-                <SelectContent>
-                  {Array.from({
-                    length: tvItem.seasons?.find(s => s.season_number === season)?.episode_count || 0
-                  }).map((_, i) => (
+                <SelectContent className="glass-strong border-white/10 text-white">
+                  {Array.from({ length: episodeCount }).map((_, i) => (
                     <SelectItem key={i + 1} value={String(i + 1)}>
                       Episode {i + 1}
                     </SelectItem>
@@ -129,87 +159,100 @@ const Player = () => {
               </Select>
             </div>
           )}
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-secondary focus:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary">
-              <Home size={24} />
-            </Button>
+
+          <Link
+            to="/"
+            aria-label="Home"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.05] text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <Home size={19} />
           </Link>
         </div>
-      </div>
+      </motion.header>
 
-      {/* Player Container */}
-      <main className="px-4 md:px-12 py-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative group">
-            <StreamPlayer
-              id={itemId}
-              imdbId={movieItem ? movieItem.imdb_id : tvItem?.external_ids?.imdb_id}
-              type={type as 'movie' | 'tv' | 'anime'}
-              season={season}
-              episode={episode}
-              title={title}
-            />
-          </div>
+      {/* Player */}
+      <motion.main
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: easeOutExpo, delay: 0.05 }}
+        className="mx-auto max-w-6xl"
+      >
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black shadow-[0_40px_120px_-40px_hsl(var(--brand-glow)/0.45)]">
+          <StreamPlayer
+            id={itemId}
+            imdbId={movieItem ? movieItem.imdb_id : tvItem?.external_ids?.imdb_id}
+            type={type as 'movie' | 'tv' | 'anime'}
+            season={season}
+            episode={episode}
+            title={title}
+          />
+        </div>
 
-          {/* Mobile Selectors */}
-          {!isMovie && tvItem && (
-            <div className="flex md:hidden items-center gap-2 mt-4">
-              <Select value={String(season)} onValueChange={handleSeasonChange}>
-                <SelectTrigger className="flex-1 bg-secondary/50 border-none">
-                  <SelectValue placeholder="Season" />
-                </SelectTrigger>
-                <SelectContent>
-                  {tvItem.seasons?.filter(s => s.season_number > 0).map((s) => (
+        {/* Mobile selectors */}
+        {!isMovie && tvItem && (
+          <div className="mt-4 flex items-center gap-2 md:hidden">
+            <Select value={String(season)} onValueChange={handleSeasonChange}>
+              <SelectTrigger className="h-10 flex-1 rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80">
+                <SelectValue placeholder="Season" />
+              </SelectTrigger>
+              <SelectContent className="glass-strong border-white/10 text-white">
+                {tvItem.seasons
+                  ?.filter((s) => s.season_number > 0)
+                  .map((s) => (
                     <SelectItem key={s.id} value={String(s.season_number)}>
                       S{s.season_number}
                     </SelectItem>
                   ))}
-                </SelectContent>
-              </Select>
+              </SelectContent>
+            </Select>
 
-              <Select value={String(episode)} onValueChange={handleEpisodeChange}>
-                <SelectTrigger className="flex-1 bg-secondary/50 border-none">
-                  <SelectValue placeholder="Episode" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({
-                    length: tvItem.seasons?.find(s => s.season_number === season)?.episode_count || 0
-                  }).map((_, i) => (
-                    <SelectItem key={i + 1} value={String(i + 1)}>
-                      E{i + 1}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+            <Select value={String(episode)} onValueChange={handleEpisodeChange}>
+              <SelectTrigger className="h-10 flex-1 rounded-xl border-white/10 bg-white/[0.05] text-xs text-white/80">
+                <SelectValue placeholder="Episode" />
+              </SelectTrigger>
+              <SelectContent className="glass-strong border-white/10 text-white">
+                {Array.from({ length: episodeCount }).map((_, i) => (
+                  <SelectItem key={i + 1} value={String(i + 1)}>
+                    E{i + 1}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-          <div className="mt-8 flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <h2 className="text-2xl md:text-3xl font-bold">{title}</h2>
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full uppercase tracking-wider">
-                  {type}
-                </span>
-                <span className="text-muted-foreground font-medium">
+        {/* Meta */}
+        <div className="glass mt-6 rounded-3xl p-5 md:p-7">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="brand-gradient flex h-10 w-10 items-center justify-center rounded-xl text-white">
+                <Play size={17} fill="currentColor" className="ml-0.5" />
+              </span>
+              <div>
+                <h2 className="font-display text-xl font-bold text-white md:text-2xl">
+                  {title}
+                </h2>
+                <p className="text-xs text-white/40">
                   {year}
-                </span>
-                {movieItem?.runtime && (
-                  <span className="text-muted-foreground font-medium">
-                    {Math.floor(movieItem.runtime / 60)}h {movieItem.runtime % 60}m
-                  </span>
-                )}
+                  {movieItem?.runtime
+                    ? ` • ${Math.floor(movieItem.runtime / 60)}h ${movieItem.runtime % 60}m`
+                    : ''}
+                </p>
               </div>
             </div>
 
-            <div className="h-px bg-white/5 w-full" />
-
-            <p className="text-foreground/80 leading-relaxed max-w-4xl text-lg">
-              {item.overview}
-            </p>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+              {type}
+            </span>
           </div>
+
+          <div className="my-5 h-px w-full bg-white/[0.06]" />
+
+          <p className="max-w-4xl text-sm leading-relaxed text-white/60">
+            {item.overview}
+          </p>
         </div>
-      </main>
+      </motion.main>
     </div>
   );
 };

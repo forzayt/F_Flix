@@ -9,7 +9,10 @@ interface GenreFilterProps {
 }
 
 const GenreFilter = ({ genres, selectedGenre, onSelectGenre }: GenreFilterProps) => {
-  const options = [{ id: null as string | null, name: 'All' }, ...genres];
+  const options: { id: string | null; name: string }[] = [
+    { id: null, name: 'All' },
+    ...genres.map((genre) => ({ id: String(genre.id), name: genre.name })),
+  ];
 
   return (
     <div className="flex flex-wrap gap-2">
