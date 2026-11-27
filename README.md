@@ -12,7 +12,6 @@ Get the latest Windows desktop app (no install or build required):
 
 **[⬇️ Download F_Flix.Setup.1.0.0.exe (Latest)](https://github.com/forzayt/F_Flix/releases/download/V1/F_Flix.Setup.1.0.0.exe)**
 
-> Looking for older or newer builds? See all [Releases](https://github.com/forzayt/F_Flix/releases).
 
 ---
 
