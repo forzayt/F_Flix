@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "electron": "electron .",
-    "build:win": "electron-builder --win portable"
+    "build:win": "electron-builder --win"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -92,6 +92,10 @@
   "build": {
     "appId": "com.forza.fflix",
     "productName": "F_Flix",
+    "compression": "maximum",
+    "electronLanguages": [
+      "en-US"
+    ],
     "files": [
       "electron/**/*",
       "package.json"
@@ -100,12 +104,18 @@
       "icon": "electron/icon.ico",
       "target": [
         {
-          "target": "portable",
+          "target": "nsis",
           "arch": [
             "x64"
           ]
         }
       ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
   }
 }
